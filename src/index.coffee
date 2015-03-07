@@ -1,6 +1,8 @@
 crypto = require 'crypto'
 es = require 'event-stream'
 _ = require 'lodash'
+through2 = require 'through2'
+replaceStream = require 'replacestream'
 
 class Expirer
   constructor: (@options) ->
@@ -35,10 +37,30 @@ class Expirer
         return
 
   replace: ->
-    es.map (file, cb) =>
-      # console.log 'replace', file.relative
-      cb null, file
+    receipt = @getReceipt()
+    through2.obj (file, enc, cb) ->
+      if file.isNull()
+        cb(null, file);
+      else if file.isBuffer()
+        file.contents = new Buffer(
+          String(file.contents).replace receipt.pattern, receipt.replacer
+        )  
+        cb(null, file);
+      else  
+        file.contents = file.contents.pipe replaceStream receipt.pattern, receipt.replacer
+        cb(null, file);
 
+  makeReceipt: ->
+    receipt =
+      pattern: 'eels'
+      replacer: ->
+        'aale'
+    receipt   
+
+  getReceipt: ->
+    if not @_receipt
+      @_receipt = @makeReceipt()
+    @_receipt  
 
 
 namedExpirers = {}

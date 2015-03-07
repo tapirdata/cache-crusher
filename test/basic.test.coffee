@@ -43,7 +43,7 @@ checkReplace = (exp, replaceFile, done) ->
   withStreamData replaceStream, (data) ->
     # console.log 'replace data=', data
     foo = _eval data
-    expect(foo()).to.be.equal 'app/x/eels.text'
+    expect(foo()).to.be.equal 'app/x/aale.text'
     done()
     return
   
