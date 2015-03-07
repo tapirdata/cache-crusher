@@ -35,6 +35,9 @@ class Expirer
         return
 
   replace: ->
+    es.map (file, cb) =>
+      # console.log 'replace', file.relative
+      cb null, file
 
 
 
