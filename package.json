@@ -14,15 +14,14 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^2.1.1",
-    "coffee": "^1.0.0",
     "coffee-script": "^1.9.1",
-    "event-stream": "^3.3.0",
-    "mocha": "^2.2.0"
+    "eval": "^0.1.0",
+    "mocha": "^2.2.0",
+    "vinyl": "^0.4.6"
   },
   "dependencies": {
     "crypto": "0.0.3",
-    "gulp-util": "^3.0.4",
-    "lodash": "^3.4.0",
-    "through2": "^0.6.3"
+    "event-stream": "^3.3.0",
+    "lodash": "^3.4.0"
   }
 }

@@ -1,19 +1,18 @@
 crypto = require 'crypto'
 es = require 'event-stream'
 _ = require 'lodash'
-gutil = require 'gulp-util'
 
 class Expirer
   constructor: (@options) ->
     @_hashes = {}
 
-  getHash: (file, cb) ->
-    # console.log 'getHash', file.relative
+  hashOfFile: (file, cb) ->
+    # console.log 'hashOfFile', file.relative
     hashStream = crypto.createHash 'sha1';
     
     back = -> 
       hash = hashStream.read().toString 'hex';
-      # console.log 'getHash->', hash 
+      # console.log 'hashOfFile->', hash 
       cb null, hash
       return
 
@@ -27,13 +26,16 @@ class Expirer
   scan: ->
     es.map (file, cb) =>
       # console.log 'scan', file.relative
-      hash = @getHash file, (err, hash) =>
+      hash = @hashOfFile file, (err, hash) =>
         if err
           cb err, file
         else  
           @_hashes[file.relative] = hash
           cb null, file
         return
+
+  replace: ->
+
 
 
 namedExpirers = {}
