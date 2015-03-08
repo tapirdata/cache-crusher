@@ -8,12 +8,17 @@ chai = require 'chai'
 expect = chai.expect
 expirer = require '../src/index'
 
-scanPath1 = 'fixtures/eels.txt'
+targetPath1 = 'fixtures/eels.txt'
 
-scanHashes = {}
-scanHashes[scanPath1] = '15390ef2ebb49260800bde88fda1e054791bb5fb'
+targetHashes = {}
+targetHashes[targetPath1] = '15390ef2ebb49260800bde88fda1e054791bb5fb'
 
-replacePath1 = 'fixtures/main.js'
+sourceCheckers =
+  'fixtures/main.js': (data) ->
+     console.log 'main.js: data="%s..."', data.substr 0, 36
+      ## foo = _eval data
+      ## expect(foo()).to.be.equal 'app/x/aale.text'
+
 
 withStreamData = (stream, cb) ->
   stream.on 'data', (file) ->
@@ -34,7 +39,7 @@ withStreamData = (stream, cb) ->
   return
 
 
-checkStreamData = (stream, done) ->
+checkTarget = (stream, done) ->
   withStreamData stream, (file, data) ->
     if file
       reqData = fs.readFileSync file.path, 'utf8'
@@ -45,56 +50,53 @@ checkStreamData = (stream, done) ->
   return
 
 
-checkReplace = (exp, replaceFile, done) ->
-  replaceStream = exp.replace()
-
-  withStreamData replaceStream, (data) ->
-    # console.log 'replace data=', data
-    foo = _eval data
-    expect(foo()).to.be.equal 'app/x/aale.text'
-    done()
+checkSource = (stream, done) ->
+  withStreamData stream, (file, data) ->
+    if file
+      p = path.relative __dirname, file.path
+      console.log 'checkSource p=', p
+      checker = sourceCheckers[p]
+      if checker
+        checker data
+    else
+      done()
     return
   
-  replaceStream.write replaceFile
-  replaceStream.end()
-
 
 makeTests = (title, options) ->
 
   describe title, ->
-    scanStream = null
+    targetStream = null
     exp1 = null
     before ->
       exp1 = expirer tgtPath: __dirname 
-      scanStream = vinylFs.src 'fixtures/**/*', cwd: __dirname, buffer: not options.scanStream
-      scanStream = scanStream.pipe exp1.scan()
+      targetStream = vinylFs.src 'fixtures/**/*',
+        cwd: __dirname
+        buffer: not options.targetStream
+      targetStream = targetStream.pipe exp1.target()
 
-    it 'should pass unmodified', (done) ->
-      checkStreamData scanStream, done
+    it 'should pass target unmodified', (done) ->
+      checkTarget targetStream, done
 
-    it 'should have correct hashes', ->
-      for p, hash of scanHashes
+    it 'should have correct hashes of targets', ->
+      for p, hash of targetHashes
         expect(exp1._hashes[p]).to.be.equal hash
    
-    # it 'should replace in buffer-file', (done) ->
-    #   replaceFile1 = new VinylFile
-    #     contents: fs.readFileSync replacePath1
-    #     path: replacePath1
-    #   checkReplace exp1, replaceFile1, done  
-
-    # it 'should replace in stream-file', (done) ->
-    #   replaceFile1 = new VinylFile
-    #     contents: fs.createReadStream replacePath1
-    #     path: replacePath1
-    #   checkReplace exp1, replaceFile1, done  
-
+    it 'should replace in source ' + (if options.sourceStream then '(stream)' else '(buffer)'), (done) ->
+      sourceStream = vinylFs.src 'fixtures/**/*.js',
+        cwd: __dirname
+        buffer: not options.sourceStream
+      sourceStream = sourceStream.pipe exp1.source()
+      checkSource sourceStream, done
 
 
 describe 'gulp-expirer', ->
 
-  makeTests 'Buffer input',
-    scanStream: false
+  makeTests 'Buffer target',
+    targetStream: false
+    sourceStream: true
 
-  makeTests 'Stream input',
-    scanStream: true
+  makeTests 'Stream target',
+    targetStream: true
+    sourceStream: false
 
