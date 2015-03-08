@@ -1,38 +1,46 @@
 fs = require 'fs'
+path = require 'path'
 es = require 'event-stream'
 _ = require 'lodash'
 _eval = require 'eval'
-VinylFile = require 'vinyl'
+vinylFs = require 'vinyl-fs'
 chai = require 'chai'
 expect = chai.expect
 expirer = require '../src/index'
 
-scanPath1 = 'test/fixtures/eels.txt'
-scanData1 = fs.readFileSync scanPath1, 'utf8'
-scanHash1 = '15390ef2ebb49260800bde88fda1e054791bb5fb'
+scanPath1 = 'fixtures/eels.txt'
 
-replacePath1 = 'test/fixtures/main.js'
+scanHashes = {}
+scanHashes[scanPath1] = '15390ef2ebb49260800bde88fda1e054791bb5fb'
+
+replacePath1 = 'fixtures/main.js'
 
 withStreamData = (stream, cb) ->
-  stream.on 'data', (result) ->
-    expect(result).to.exist
-    expect(result.contents).to.exist
+  stream.on 'data', (file) ->
+    expect(file).to.exist
+    expect(file.contents).to.exist
 
-    if result.isBuffer()
-      data = result.contents
-      cb(String data)
+    if file.isBuffer()
+      data = file.contents
+      cb(file, String data)
     else
-      result.contents.pipe es.wait (err, data) ->
-        cb(String data)
+      file.contents.pipe es.wait (err, data) ->
+        cb(file, String data)
         return
     return
+  stream.on 'end', ->
+    # console.log 'END'
+    cb()
   return
 
 
-checkStreamData = (stream, reqData, done) ->
-  withStreamData stream, (data) ->
-    expect(data).to.be.equal reqData
-    done()
+checkStreamData = (stream, done) ->
+  withStreamData stream, (file, data) ->
+    if file
+      reqData = fs.readFileSync file.path, 'utf8'
+      expect(data).to.be.equal reqData
+    else
+      done()
     return
   return
 
@@ -54,40 +62,31 @@ checkReplace = (exp, replaceFile, done) ->
 makeTests = (title, options) ->
 
   describe title, ->
-    scanFile1 = null
+    scanStream = null
     exp1 = null
     before ->
-      if options.scanStream
-        scanFile1 = new VinylFile
-          contents: fs.createReadStream scanPath1
-          path: scanPath1
-      else
-        scanFile1 = new VinylFile
-          contents: fs.readFileSync scanPath1
-          path: scanPath1
-      exp1 = expirer tt: 3
+      exp1 = expirer tgtPath: __dirname 
+      scanStream = vinylFs.src 'fixtures/**/*', cwd: __dirname, buffer: not options.scanStream
+      scanStream = scanStream.pipe exp1.scan()
 
     it 'should pass unmodified', (done) ->
-      scanStream = exp1.scan()
-      checkStreamData scanStream, scanData1, done
+      checkStreamData scanStream, done
 
-      scanStream.write scanFile1
-      scanStream.end()
-
-    it 'should have correct hash', ->
-      expect(exp1._hashes[scanPath1]).to.be.equal scanHash1
+    it 'should have correct hashes', ->
+      for p, hash of scanHashes
+        expect(exp1._hashes[p]).to.be.equal hash
    
-    it 'should replace in buffer-file', (done) ->
-      replaceFile1 = new VinylFile
-        contents: fs.readFileSync replacePath1
-        path: replacePath1
-      checkReplace exp1, replaceFile1, done  
+    # it 'should replace in buffer-file', (done) ->
+    #   replaceFile1 = new VinylFile
+    #     contents: fs.readFileSync replacePath1
+    #     path: replacePath1
+    #   checkReplace exp1, replaceFile1, done  
 
-    it 'should replace in stream-file', (done) ->
-      replaceFile1 = new VinylFile
-        contents: fs.createReadStream replacePath1
-        path: replacePath1
-      checkReplace exp1, replaceFile1, done  
+    # it 'should replace in stream-file', (done) ->
+    #   replaceFile1 = new VinylFile
+    #     contents: fs.createReadStream replacePath1
+    #     path: replacePath1
+    #   checkReplace exp1, replaceFile1, done  
 
 
 

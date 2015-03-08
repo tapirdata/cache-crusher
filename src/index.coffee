@@ -1,40 +1,61 @@
+path = require 'path'
 crypto = require 'crypto'
 es = require 'event-stream'
 _ = require 'lodash'
 through2 = require 'through2'
-replaceStream = require 'replacestream'
+
+
+class Hasher
+  constructor: (@expirer, @file) ->
+    @hashStream = crypto.createHash 'sha1'
+
+  update: (chunk) ->
+    @hashStream.update chunk
+    return
+
+  complete: ->
+    hash = @hashStream.digest 'hex'
+    @expirer.setHash @file, hash
+
+
+  makeStream: () ->
+    hasher = this
+    stream = through2 (chunk, enc, cb) ->
+      console.log 'hasher', hasher.file.path, chunk.length
+      hasher.hashStream.update chunk
+      this.push chunk
+      cb()
+    stream.on 'end', ->
+      hasher.complete()
+    stream  
+
 
 class Expirer
-  constructor: (@options) ->
+  constructor: (options) ->
+    @tgtPath = options.tgtPath or '.'
     @_hashes = {}
 
-  hashOfFile: (file, cb) ->
-    # console.log 'hashOfFile', file.relative
-    hashStream = crypto.createHash 'sha1';
-    
-    back = -> 
-      hash = hashStream.read().toString 'hex';
-      # console.log 'hashOfFile->', hash 
-      cb null, hash
-      return
 
-    file.clone().pipe hashStream
-    if file.isBuffer()
-      back()
-    else
-      hashStream.on 'unpipe', ->
-        back()
+  setHash: (file, hash) ->
+    p = path.relative @tgtPath, file.path
+    console.log 'setHash ', p, hash
+    @_hashes[p] = hash
+
+
+  makeHasher: (file) ->
+    new Hasher this, file
 
   scan: ->
-    es.map (file, cb) =>
-      # console.log 'scan', file.relative
-      hash = @hashOfFile file, (err, hash) =>
-        if err
-          cb err, file
-        else  
-          @_hashes[file.relative] = hash
-          cb null, file
-        return
+    through2.obj (file, enc, cb) =>
+      console.log 'file:', file.isStream(), file.path
+      hasher = @makeHasher file
+      if file.isStream()
+        file.contents = file.contents.pipe hasher.makeStream()
+      else  
+        hasher.update file.contents
+        hasher.complete()
+      cb null, file
+
 
   replace: ->
     receipt = @getReceipt()

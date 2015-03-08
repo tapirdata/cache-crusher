@@ -16,13 +16,13 @@
     "coffee-script": "^1.9.1",
     "eval": "^0.1.0",
     "mocha": "^2.2.0",
-    "vinyl": "^0.4.6"
+    "vinyl-fs": "^1.0.0"
   },
   "dependencies": {
     "crypto": "0.0.3",
     "event-stream": "^3.3.0",
     "lodash": "^3.4.0",
-    "replacestream": "^2.0.0",
+    "map-stream": "0.0.5",
     "through2": "^0.6.3"
   },
   "license": "MIT"
