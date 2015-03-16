@@ -1,102 +1,157 @@
 fs = require 'fs'
 path = require 'path'
-es = require 'event-stream'
 _ = require 'lodash'
-_eval = require 'eval'
 vinylFs = require 'vinyl-fs'
+vinylTapper = require 'vinyl-tapper'
 chai = require 'chai'
 expect = chai.expect
-expirer = require '../src/index'
-
-targetPath1 = 'fixtures/eels.txt'
-
-targetHashes = {}
-targetHashes[targetPath1] = '15390ef2ebb49260800bde88fda1e054791bb5fb'
-
-sourceCheckers =
-  'fixtures/main.js': (data) ->
-     console.log 'main.js: data="%s..."', data.substr 0, 36
-      ## foo = _eval data
-      ## expect(foo()).to.be.equal 'app/x/aale.text'
+cacheCrusher = require '../src/index'
 
 
-withStreamData = (stream, cb) ->
-  stream.on 'data', (file) ->
-    expect(file).to.exist
-    expect(file.contents).to.exist
+readTree = (srcRoot, srcBase, done) ->
+  # console.log 'readTree srcRoot=%s, srcBase=%s', srcRoot, srcBase
+  walk = require 'walk' 
+  walker = walk.walk srcRoot
+  results = {}
 
-    if file.isBuffer()
-      data = file.contents
-      cb(file, String data)
-    else
-      file.contents.pipe es.wait (err, data) ->
-        cb(file, String data)
+  walker.on 'file', (src, stat, next) ->
+    srcPath = path.join src, stat.name
+    # console.log 'readTree src=%s, name=%s', src, stat.name
+    fs.readFile srcPath, (err, srcBuffer) ->
+      if err
+        next err
         return
-    return
-  stream.on 'end', ->
-    # console.log 'END'
-    cb()
-  return
+      results[path.relative srcBase, srcPath] = srcBuffer
+      next()
+      return
+
+  walker.on 'end', ->
+    done null, results
 
 
-checkTarget = (stream, done) ->
-  withStreamData stream, (file, data) ->
-    if file
-      reqData = fs.readFileSync file.path, 'utf8'
-      expect(data).to.be.equal reqData
+
+fixtureDir = path.join __dirname, 'fixtures'
+
+makeTests = (title, set, options) ->
+
+  pushSrcDir = path.join fixtureDir, set.srcDir, 'push'
+  pullSrcDir = path.join fixtureDir, set.srcDir, 'pull'
+  pushExpDir = path.join fixtureDir, set.expDir, 'push'
+  pullExpDir = path.join fixtureDir, set.expDir, 'pull'
+
+  pushResults = {}
+  pullResults = {}
+
+  pushTapper = vinylTapper
+    provideBuffer: true
+    terminate: true
+  pushTapper.on 'tap', (file, buffer) ->  
+    pushResults[file.relative] = 
+      file: file
+      buffer: buffer
+
+  pullTapper = vinylTapper
+    provideBuffer: true
+    terminate: true
+  pullTapper.on 'tap', (file, buffer) ->  
+    pullResults[file.relative] = 
+      file: file
+      buffer: buffer
+
+  pushExps = null
+  pullExps = null
+  readExps = (cb) ->
+    readTree pushSrcDir, pushSrcDir, (err, results) ->
+      pushExps = results
+      if err
+        cb err
+        return
+      readTree pullSrcDir, pullSrcDir, (err, results) ->
+        pullExps = results
+        if err
+          cb err
+          return
+        cb()
+
+  modeName = (useBuffer) ->
+    if useBuffer
+      'buffer'
     else
-      done()
-    return
-  return
+      'stream'
 
 
-checkSource = (stream, done) ->
-  withStreamData stream, (file, data) ->
-    if file
-      p = path.relative __dirname, file.path
-      console.log 'checkSource p=', p
-      checker = sourceCheckers[p]
-      if checker
-        checker data
-    else
-      done()
-    return
-  
+  describe "#{title} with push #{modeName options.usePushBuffer}, with pull #{modeName options.usePullBuffer}", ->
+    before (done) ->
+      readExps (err) ->
+        if err
+          done err
+          return
 
-makeTests = (title, options) ->
+        streamCount = 2
+        streamDone = ->
+          if --streamCount == 0
+            done()
+          return  
 
-  describe title, ->
-    targetStream = null
-    exp1 = null
-    before ->
-      exp1 = expirer tgtPath: __dirname 
-      targetStream = vinylFs.src 'fixtures/**/*',
-        cwd: __dirname
-        buffer: not options.targetStream
-      targetStream = targetStream.pipe exp1.target()
+        pushWell = vinylFs.src '**/*.*',
+          cwd: pushSrcDir 
+          buffer: options.usePushBuffer
+        pushWell
+          .pipe pushTapper
+          .on 'end', streamDone
 
-    it 'should pass target unmodified', (done) ->
-      checkTarget targetStream, done
+        pullWell = vinylFs.src '**/*.*',
+          cwd: pullSrcDir 
+          buffer: options.usePullBuffer
+        pullWell
+          .pipe pullTapper
+          .on 'end', streamDone
 
-    it 'should have correct hashes of targets', ->
-      for p, hash of targetHashes
-        expect(exp1._hashes[p]).to.be.equal hash
-   
-    it 'should replace in source ' + (if options.sourceStream then '(stream)' else '(buffer)'), (done) ->
-      sourceStream = vinylFs.src 'fixtures/**/*.js',
-        cwd: __dirname
-        buffer: not options.sourceStream
-      sourceStream = sourceStream.pipe exp1.source()
-      checkSource sourceStream, done
+    it 'should write the expected number of push files', ->
+      # console.log 'pushExps=', pushExps
+      # console.log 'pushResults=', pushResults
+      expect(_.keys(pushResults).length).to.be.equal _.keys(pushExps).length
+
+    it 'should write the expected number of pull files', ->
+      # console.log 'pullExps=', pullExps
+      # console.log 'pullResults=', pullResults
+      expect(_.keys(pullResults).length).to.be.equal _.keys(pullExps).length
+     
+    it 'should write push files with expected paths', ->
+      for p of pushExps
+        expect(pushResults[p]).to.be.a 'object'
+
+    it 'should write pull files with expected paths', ->
+      for p of pullExps
+        expect(pullResults[p]).to.be.a 'object'
+
+    it 'should write push files with expected contents', ->
+      for p, expBuffer of pushExps
+        result = pushResults[p]
+        expect(result.buffer.toString 'utf8').to.be.equal expBuffer.toString 'utf8'
+
+    it 'should write pull files with expected contents', ->
+      for p, expBuffer of pullExps
+        result = pullResults[p]
+        expect(result.buffer.toString 'utf8').to.be.equal expBuffer.toString 'utf8'
 
 
-describe 'gulp-expirer', ->
 
-  makeTests 'Buffer target',
-    targetStream: false
-    sourceStream: true
 
-  makeTests 'Stream target',
-    targetStream: true
-    sourceStream: false
+describe 'cache-crusher', ->
+
+  simpleSet =
+    srcDir: 'simple-src'
+    expDir: 'simple-src'
+
+  makeTests 'Simple',
+    simpleSet
+    usePushBuffer: false
+    usePullBuffer: true
+
+  makeTests 'Simple',
+    simpleSet
+    usePushBuffer: true
+    usePullBuffer: false
+
 
