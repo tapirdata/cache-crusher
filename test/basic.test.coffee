@@ -61,12 +61,12 @@ makeTests = (title, set, options) ->
   pushExps = null
   pullExps = null
   readExps = (cb) ->
-    readTree pushSrcDir, pushSrcDir, (err, results) ->
+    readTree pushExpDir, pushExpDir, (err, results) ->
       pushExps = results
       if err
         cb err
         return
-      readTree pullSrcDir, pullSrcDir, (err, results) ->
+      readTree pullExpDir, pullExpDir, (err, results) ->
         pullExps = results
         if err
           cb err
@@ -81,6 +81,7 @@ makeTests = (title, set, options) ->
 
 
   describe "#{title} with push #{modeName options.usePushBuffer}, with pull #{modeName options.usePullBuffer}", ->
+
     before (done) ->
       readExps (err) ->
         if err
@@ -93,10 +94,13 @@ makeTests = (title, set, options) ->
             done()
           return  
 
+        crusher = cacheCrusher()
+
         pushWell = vinylFs.src '**/*.*',
           cwd: pushSrcDir 
           buffer: options.usePushBuffer
         pushWell
+          .pipe crusher.pusher()
           .pipe pushTapper
           .on 'end', streamDone
 
@@ -104,6 +108,7 @@ makeTests = (title, set, options) ->
           cwd: pullSrcDir 
           buffer: options.usePullBuffer
         pullWell
+          .pipe crusher.puller()
           .pipe pullTapper
           .on 'end', streamDone
 
@@ -142,7 +147,7 @@ describe 'cache-crusher', ->
 
   simpleSet =
     srcDir: 'simple-src'
-    expDir: 'simple-src'
+    expDir: 'simple-exp'
 
   makeTests 'Simple',
     simpleSet
