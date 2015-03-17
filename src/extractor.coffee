@@ -2,57 +2,89 @@
 
 
 class Extractor
+
+  preambleBrickNum: 2
+  pathBrickNum: 1
+
   constructor: (options) ->
     options = options or {}
     @base = options.base or ''
 
-  createDirBrick: ->
-    part = '[\\w\\._-]*'
-    "#{@base}(?:#{part}/)*"
-
-  createBasenameBrick: ->
+  getBasenameBrick: ->
     '[\\w\\._-]+'
 
-  createPreBrick: ->
+  getDirpartBrick: ->
+    '[\\w\\._-]*'
+
+  getPathBrick: ->
+    "#{@base}(?:#{@getDirpartBrick()}/)*#{@getBasenameBrick()}"
+
+  getPreBrick: ->
     ''
 
-  createPostBrick: ->
+  getPostBrick: ->
     ''
 
-  createOpenBrick: ->
+  getOpenBrick: ->
     '[\'"]'
 
-  createCloseBrick: ->
+  getCloseBrick: ->
     '\\2'
 
-
-  createRegExp: ->
+  getBrick: ->
     parts = [
-      '(', @createPreBrick(), ')'
-      '(', @createOpenBrick(), ')'
-      '(', @createDirBrick(), ')'
-      '(', @createBasenameBrick(), ')'
-      '(', @createCloseBrick(), ')'
-      '(', @createPostBrick(), ')'
+      '(', @getPreBrick(), ')'
+      '(', @getOpenBrick(), ')'
+      '(', @getPathBrick(), ')'
+      '(', @getCloseBrick(), ')'
+      '(', @getPostBrick(), ')'
     ]  
-    new RegExp parts.join('')
+    parts.join ''
+
+  createPattern: ->
+    new RegExp @getBrick()
+
+  getPattern: ->
+    pattern = @_pattern
+    if not pattern?
+      pattern = @createPattern()
+      @_pattern = pattern
+    pattern
+
+  split: (match) ->
+    preambleCut = 1 + @preambleBrickNum
+    pathCut = preambleCut + @pathBrickNum
+    preamble: match.slice(1, preambleCut).join ''
+    path: match.slice(preambleCut, pathCut).join ''
+    postamble: match.slice(pathCut).join ''
+
 
 
 class HtmlExtractor extends Extractor
   constructor: (options) ->
     super options
 
+  getPreBrick: ->
+    'src\\s*=\\s*'
 
 
-module.exports = 
-  Extractor: Extractor
-  HtmlExtractor: HtmlExtractor
+factory = (options) ->
+  new Extractor options
 
-e = new HtmlExtractor base: '/app/'
-s = '<img src="/app/cc/main.css" />'
-r = e.createRegExp()
-m = r.exec s
-console.log 'match=', m
-console.log 'ori=', m.slice(1).join ''
+factory.Extractor = Extractor
+factory.HtmlExtractor = HtmlExtractor
+
+module.exports = factory
+
+
+
+  
+
+# extractor = new HtmlExtractor base: '/app/'
+# s = '<img src  = "/app/cc/main.css" />'
+# pattern = extractor.getPattern()
+# match = pattern.exec s
+# console.log 'match=', match
+# console.log 'split->', extractor.split match
   
 

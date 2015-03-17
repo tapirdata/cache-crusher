@@ -5,6 +5,7 @@ vinylFs = require 'vinyl-fs'
 vinylTapper = require 'vinyl-tapper'
 chai = require 'chai'
 expect = chai.expect
+assert = chai.assert
 cacheCrusher = require '../src/index'
 
 
@@ -27,6 +28,28 @@ readTree = (srcRoot, srcBase, done) ->
 
   walker.on 'end', ->
     done null, results
+
+
+compareResultsExps = (results, exps) ->
+  misses = []
+  extras = []
+  for p of exps
+    if not results[p]?
+      misses.push p
+  for p of results
+    if not exps[p]
+      extras.push p
+  assert misses.length == 0 and extras.length == 0, ->
+    parts = []
+    if misses.length
+      parts.push (_.map misses, (s) -> "'#{s}'").join(', ') + ' missing'
+    if extras.length
+      parts.push (_.map extras, (s) -> "'#{s}'").join(', ') + ' superfluous'
+    'Paths differ: ' + parts.join '; '
+
+  for p, result of results
+    expBuffer = exps[p]
+    expect(result.buffer.toString 'utf8').to.be.equal expBuffer.toString 'utf8'
 
 
 
@@ -80,6 +103,11 @@ makeTests = (title, set, options) ->
       'stream'
 
 
+  counterparts = [
+    (url: '/app/', dest: pushSrcDir)
+  ]
+  # console.log 'counterparts=', counterparts
+
   describe "#{title} with push #{modeName options.usePushBuffer}, with pull #{modeName options.usePullBuffer}", ->
 
     before (done) ->
@@ -94,7 +122,8 @@ makeTests = (title, set, options) ->
             done()
           return  
 
-        crusher = cacheCrusher()
+        crusher = cacheCrusher
+          counterparts: counterparts
 
         pushWell = vinylFs.src '**/*.*',
           cwd: pushSrcDir 
@@ -111,36 +140,12 @@ makeTests = (title, set, options) ->
           .pipe crusher.puller()
           .pipe pullTapper
           .on 'end', streamDone
+    
+    it 'should write the expected push files', ->
+      compareResultsExps pushResults, pushExps
 
-    it 'should write the expected number of push files', ->
-      # console.log 'pushExps=', pushExps
-      # console.log 'pushResults=', pushResults
-      expect(_.keys(pushResults).length).to.be.equal _.keys(pushExps).length
-
-    it 'should write the expected number of pull files', ->
-      # console.log 'pullExps=', pullExps
-      # console.log 'pullResults=', pullResults
-      expect(_.keys(pullResults).length).to.be.equal _.keys(pullExps).length
-     
-    it 'should write push files with expected paths', ->
-      for p of pushExps
-        expect(pushResults[p]).to.be.a 'object'
-
-    it 'should write pull files with expected paths', ->
-      for p of pullExps
-        expect(pullResults[p]).to.be.a 'object'
-
-    it 'should write push files with expected contents', ->
-      for p, expBuffer of pushExps
-        result = pushResults[p]
-        expect(result.buffer.toString 'utf8').to.be.equal expBuffer.toString 'utf8'
-
-    it 'should write pull files with expected contents', ->
-      for p, expBuffer of pullExps
-        result = pullResults[p]
-        expect(result.buffer.toString 'utf8').to.be.equal expBuffer.toString 'utf8'
-
-
+    it 'should write the expected pull files', ->
+      compareResultsExps pullResults, pullExps
 
 
 describe 'cache-crusher', ->
