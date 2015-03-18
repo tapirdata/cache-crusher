@@ -6,40 +6,28 @@ class Extractor
   preambleBrickNum: 2
   pathBrickNum: 1
 
+  partBrick: '[\\w\\._-]+'
+  preBrick: ''
+  postBrick: ''
+  openBrick: '[\'"]'
+  closeBrick: '\\2'
+
   constructor: (options) ->
     options = options or {}
     @base = options.base or ''
-
-  getBasenameBrick: ->
-    '[\\w\\._-]+'
-
-  getDirpartBrick: ->
-    '[\\w\\._-]*'
-
-  getPathBrick: ->
-    "#{@base}(?:#{@getDirpartBrick()}/)*#{@getBasenameBrick()}"
-
-  getPreBrick: ->
-    ''
-
-  getPostBrick: ->
-    ''
-
-  getOpenBrick: ->
-    '[\'"]'
-
-  getCloseBrick: ->
-    '\\2'
+    if options.partBrick
+      @partBrick = options.partBrick
+    @pathBrick = "#{@base}(?:#{@partBrick}/)*#{@partBrick}"
 
   getBrick: ->
-    parts = [
-      '(', @getPreBrick(), ')'
-      '(', @getOpenBrick(), ')'
-      '(', @getPathBrick(), ')'
-      '(', @getCloseBrick(), ')'
-      '(', @getPostBrick(), ')'
+    brickParts = [
+      '(', @preBrick, ')'
+      '(', @openBrick, ')'
+      '(', @pathBrick, ')'
+      '(', @closeBrick, ')'
+      '(', @postBrick, ')'
     ]  
-    parts.join ''
+    brickParts.join ''
 
   createPattern: ->
     new RegExp @getBrick()
@@ -59,32 +47,17 @@ class Extractor
     postamble: match.slice(pathCut).join ''
 
 
-
 class HtmlExtractor extends Extractor
   constructor: (options) ->
     super options
 
-  getPreBrick: ->
-    'src\\s*=\\s*'
-
+  preBrick: '(?:src|href)\\s*=\\s*'
 
 factory = (options) ->
-  new Extractor options
+  new HtmlExtractor options
 
 factory.Extractor = Extractor
 factory.HtmlExtractor = HtmlExtractor
 
 module.exports = factory
-
-
-
-  
-
-# extractor = new HtmlExtractor base: '/app/'
-# s = '<img src  = "/app/cc/main.css" />'
-# pattern = extractor.getPattern()
-# match = pattern.exec s
-# console.log 'match=', match
-# console.log 'split->', extractor.split match
-  
 

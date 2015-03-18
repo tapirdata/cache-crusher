@@ -52,7 +52,6 @@ compareResultsExps = (results, exps) ->
     expect(result.buffer.toString 'utf8').to.be.equal expBuffer.toString 'utf8'
 
 
-
 fixtureDir = path.join __dirname, 'fixtures'
 
 makeTests = (title, set, options) ->
@@ -104,7 +103,7 @@ makeTests = (title, set, options) ->
 
 
   counterparts = [
-    (urlRoot: '/app/', fsRoot: pushSrcDir)
+    (urlRoot: '/app/', fsRoot: path.relative __dirname, pushSrcDir)
   ]
 
   describe "#{title} with push #{modeName options.usePushBuffer}, with pull #{modeName options.usePullBuffer}", ->
@@ -124,6 +123,7 @@ makeTests = (title, set, options) ->
           return  
 
         crusher = cacheCrusher
+          root: __dirname
           counterparts: counterparts
 
         pushWell = vinylFs.src '**/*.*',
@@ -143,7 +143,6 @@ makeTests = (title, set, options) ->
           .on 'end', streamDone
     
     it 'should write the expected push files', ->
-      # console.log crusher.resolver.map
       compareResultsExps pushResults, pushExps
 
     it 'should write the expected pull files', ->
