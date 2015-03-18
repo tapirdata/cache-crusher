@@ -7,11 +7,19 @@ escapeRegExp = (s) ->
 
 class Entry
   constructor: (options) ->
+    @fsRoot = options.fsRoot
     @urlRoot = options.urlRoot
-    @destPattern = options.destPattern
+    @urlPattern = new RegExp "^#{escapeRegExp options.urlRoot}(.*)"
+    @fsPattern = new RegExp "^#{escapeRegExp options.fsRoot}(.*)"
 
-  map: (destPath) ->
-    match = @destPattern.exec destPath
+  toFsPath: (urlPath) ->
+    match = @urlPattern.exec urlPath
+    if not match?
+      return
+    path.join @fsRoot, match[1]
+
+  toUrlPath: (fsPath) ->
+    match = @fsPattern.exec fsPath
     if not match?
       return
     path.join @urlRoot, match[1]
@@ -22,32 +30,26 @@ class Mapper
   constructor: (counterparts, options) ->
     entries = []
     for cp in counterparts
-      destPattern = new RegExp "^#{escapeRegExp cp.dest}(.*)"
-      entry = new Entry
-        urlRoot: cp.url
-        destPattern: destPattern
-      entries.push entry
+      entries.push new Entry cp
     @entries = entries
 
-  map: (destPath) ->  
+  toFsPath: (urlPath) ->  
     for entry in @entries
-      urlPath = entry.map destPath
+      fsPath = entry.toFsPath urlPath
+      if fsPath?
+        return fsPath
+
+  toUrlPath: (fsPath) ->  
+    for entry in @entries
+      urlPath = entry.toUrlPath fsPath
       if urlPath?
         return urlPath
-    throw new Error "no mapping found for path '#{destPath}'"
 
 
 factory = (counterparts, options) ->
   new Mapper counterparts, options
 
 factory.Mapper = Mapper
-
-# m1 = factory [
-#   (url:'/vendor', dest:'.tmp/dev/client/scripts/vendor')
-#   (url: '/app', dest: '.tmp/dev/client')
-# ]
-# 
-
 
 module.exports = factory
 

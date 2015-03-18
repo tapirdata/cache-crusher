@@ -104,11 +104,12 @@ makeTests = (title, set, options) ->
 
 
   counterparts = [
-    (url: '/app/', dest: pushSrcDir)
+    (urlRoot: '/app/', fsRoot: pushSrcDir)
   ]
-  # console.log 'counterparts=', counterparts
 
   describe "#{title} with push #{modeName options.usePushBuffer}, with pull #{modeName options.usePullBuffer}", ->
+
+    crusher = null
 
     before (done) ->
       readExps (err) ->
@@ -142,6 +143,7 @@ makeTests = (title, set, options) ->
           .on 'end', streamDone
     
     it 'should write the expected push files', ->
+      # console.log crusher.resolver.map
       compareResultsExps pushResults, pushExps
 
     it 'should write the expected pull files', ->

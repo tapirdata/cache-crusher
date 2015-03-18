@@ -19,12 +19,9 @@ class Crusher
     crusher = @
     streamHasher
       digestLength: 8
-      rename: (name, digest) -> "#{name}-#{digest}"
-    .on 'rename', (oldTag, newTag) ->
-      oldUrl = crusher.mapper.map oldTag
-      newUrl = crusher.mapper.map newTag
-      # console.log 'rename %s -> %s', oldUrl, newUrl
-      crusher.resolver.push oldUrl, null, newUrl
+      rename: 'postfix'
+    .on 'digest', (digest, oldTag, newTag) ->
+      crusher.resolver.push oldTag, null, digest: digest, tag: newTag
 
   puller: ->
     crusher = @
@@ -32,12 +29,19 @@ class Crusher
       pattern: crusher.extractor.getPattern()
       substitute: (match, tag, done) ->
         parts = crusher.extractor.split match
-        # console.log 'parts=', parts
-        crusher.resolver.pull parts.path, (err, newPath) ->
+        fsPath = crusher.mapper.toFsPath parts.path
+        if not fsPath?
+          done new Error "no fs-path for url-path '#{parts.path}'"
+          return
+        crusher.resolver.pull fsPath, (err, result) ->
           if err
             done err
             return
-          replacement = parts.preamble + newPath + parts.postamble
+          newUrlPath = crusher.mapper.toUrlPath result.tag
+          if not newUrlPath?
+            done new Error "no url-path for url-path '#{result.tag}'"
+            return
+          replacement = parts.preamble + newUrlPath + parts.postamble
           done null, replacement
           return
 
