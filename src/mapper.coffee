@@ -27,9 +27,10 @@ class Entry
 
 class Mapper 
 
-  constructor: (counterparts, options) ->
+  constructor: (options) ->
+    options = options or {}
     entries = []
-    for cp in counterparts
+    for cp in options.counterparts or []
       entries.push new Entry cp
     @entries = entries
 
@@ -46,8 +47,8 @@ class Mapper
         return urlPath
 
 
-factory = (counterparts, options) ->
-  new Mapper counterparts, options
+factory = (options) ->
+  new Mapper options
 
 factory.Mapper = Mapper
 

@@ -1,7 +1,8 @@
 'use strict'
 
-
 class Extractor
+
+  @label: 'base'
 
   preambleBrickNum: 2
   pathBrickNum: 1
@@ -46,18 +47,6 @@ class Extractor
     path: match.slice(preambleCut, pathCut).join ''
     postamble: match.slice(pathCut).join ''
 
+module.exports = Extractor
 
-class HtmlExtractor extends Extractor
-  constructor: (options) ->
-    super options
-
-  preBrick: '(?:src|href)\\s*=\\s*'
-
-factory = (options) ->
-  new HtmlExtractor options
-
-factory.Extractor = Extractor
-factory.HtmlExtractor = HtmlExtractor
-
-module.exports = factory
 

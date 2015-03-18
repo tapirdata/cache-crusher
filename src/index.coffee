@@ -4,18 +4,33 @@ path = require 'path'
 _ = require 'lodash'
 streamHasher = require 'stream-hasher'
 streamReplacer = require 'stream-replacer'
-crushExtractor = require './extractor'
 crushMapper = require './mapper'
 crushResolver = require './resolver'
+crushExtractorFactory = require './extractor-factory'
 
+extractorFactory = crushExtractorFactory()
+Ex = extractorFactory.classOfLabel 'html'
 
 class Crusher
+ 
+  @defaultResolverOptions:
+    timeout: 1000
+
+  @defaultMapperOptions: {}
+
   constructor: (options) ->
-    @resolver = crushResolver timeout: 1000
-    @extractor = crushExtractor base: '/app/'
-    @mapper = crushMapper options.counterparts
+    options = options or {}
+    resolverOptions = _.merge {}, @constructor.defaultResolverOptions, options.resolver
+    mapperOptions = _.merge {}, @constructor.defaultMapperOptions, options.mapper
+    @resolver = crushResolver resolverOptions
+    @mapper = crushMapper mapperOptions
     root = options.root or '/'
     @tagger = (file) -> path.relative root, file.path
+
+    @extractor = new Ex base: '/app/'
+
+  getExtractor: (file) ->
+    @extractor
 
   pushOptioner: (file) ->
     digestLength: 8
@@ -23,13 +38,11 @@ class Crusher
 
   pullOptioner: (file) ->
     resolver = @resolver
-    extractor = @extractor
     mapper = @mapper
-    # console.log 'pattern=', extractor.getPattern()
+    extractor = @getExtractor file
     pattern: extractor.getPattern()
     substitute: (match, tag, done) ->
       parts = extractor.split match
-      # console.log 'parts=', parts
       fsPath = mapper.toFsPath parts.path
       if not fsPath?
         done new Error "no fs-path for url-path '#{parts.path}'"
@@ -46,18 +59,18 @@ class Crusher
         done null, replacement
         return
 
-  pusher: ->
+  pusher: (options) ->
     resolver = @resolver
     streamHasher
       tagger: @tagger
-      optioner: @pushOptioner.bind @
+      optioner: @pushOptioner.bind @, options
     .on 'digest', (digest, oldTag, newTag) ->
       resolver.push oldTag, null, digest: digest, tag: newTag
 
-  puller: ->
+  puller: (options) ->
     streamReplacer
       tagger: @tagger
-      optioner: @pullOptioner.bind @
+      optioner: @pullOptioner.bind @, options
 
 
 factory = (options) ->
