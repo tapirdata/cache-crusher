@@ -4,8 +4,8 @@ Extractor = require './extractor'
 
 
 class HtmlExtractor extends Extractor
-  @label: 'html'
-  @types: ['html', 'xml']
+  @handle: 'html'
+  @exts: ['.html', '.xml']
 
   constructor: (options) ->
     super options

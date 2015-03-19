@@ -6,10 +6,8 @@ streamHasher = require 'stream-hasher'
 streamReplacer = require 'stream-replacer'
 crushMapper = require './mapper'
 crushResolver = require './resolver'
-crushExtractorFactory = require './extractor-factory'
+crushExtractorCatalog = require './extractor-catalog'
 
-extractorFactory = crushExtractorFactory()
-Ex = extractorFactory.classOfLabel 'html'
 
 class Crusher
  
@@ -26,20 +24,26 @@ class Crusher
     @mapper = crushMapper mapperOptions
     root = options.root or '/'
     @tagger = (file) -> path.relative root, file.path
-
-    @extractor = new Ex base: '/app/'
+    @extractorCatalog = options.extractorCatalog or crushExtractorCatalog()
 
   getExtractor: (file) ->
-    @extractor
+    ext = path.extname file.path
+    handle = @extractorCatalog.getHandle ext
+    Extractor = @extractorCatalog.getClass handle
+    if Extractor?
+      new Extractor base: '/app/'
 
-  pushOptioner: (file) ->
+  pushOptioner: (options, file) ->
     digestLength: 8
     rename: 'postfix'
 
-  pullOptioner: (file) ->
+  pullOptioner: (options, file) ->
     resolver = @resolver
     mapper = @mapper
     extractor = @getExtractor file
+    if not extractor
+      console.warn "no extractor for file '#{file.path}'"
+      return pattern: null
     pattern: extractor.getPattern()
     substitute: (match, tag, done) ->
       parts = extractor.split match

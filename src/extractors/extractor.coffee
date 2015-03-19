@@ -2,7 +2,7 @@
 
 class Extractor
 
-  @label: 'base'
+  @handle: 'base'
 
   preambleBrickNum: 2
   pathBrickNum: 1

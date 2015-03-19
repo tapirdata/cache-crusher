@@ -5,7 +5,7 @@
   "main": "./lib",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register",
-    "build": "coffee -c -b -o lib src/*.coffee",
+    "build": "rm -rf lib; coffee -c -b -o lib src",
     "prepublish": "npm run build"
   },
   "author": {
