@@ -122,12 +122,14 @@ makeTests = (title, set, options) ->
             done()
           return  
 
-        crusher = cacheCrusher 
-          root: __dirname
-          resolver:
-            timeout: 100
-          mapper:  
+        crusher = cacheCrusher
+          cwd: __dirname
+          extractor:
+            urlBase: '/app/'
+          mapper:
             counterparts: counterparts
+          resolver:
+            timeout: 1000
 
         pushWell = vinylFs.src '**/*.*',
           cwd: pushSrcDir 

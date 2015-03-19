@@ -16,22 +16,38 @@ class Crusher
 
   @defaultMapperOptions: {}
 
+  @defaultExtractorOptions:
+    urlBase: '/static/'
+
   constructor: (options) ->
     options = options or {}
     resolverOptions = _.merge {}, @constructor.defaultResolverOptions, options.resolver
     mapperOptions = _.merge {}, @constructor.defaultMapperOptions, options.mapper
+
     @resolver = crushResolver resolverOptions
     @mapper = crushMapper mapperOptions
-    root = options.root or '/'
-    @tagger = (file) -> path.relative root, file.path
-    @extractorCatalog = options.extractorCatalog or crushExtractorCatalog()
+    @cwd = options.cwd or process.cwd()
+
+    extractorOptions = _.merge {}, @constructor.defaultExtractorOptions, options.extractor
+    if not extractorOptions.catalog
+      extractorOptions.catalog = crushExtractorCatalog()
+    @extractorOptions = extractorOptions
+
+  getTagger: (base) ->
+    if base?
+      (file) -> path.join base, file.relative
+    else
+      base = @cwd
+      (file) -> path.relative base, file.path
 
   getExtractor: (file) ->
     ext = path.extname file.path
-    handle = @extractorCatalog.getHandle ext
-    Extractor = @extractorCatalog.getClass handle
+    catalog = @extractorOptions.catalog
+    handle = catalog.getHandle ext
+    Extractor = catalog.getClass handle
     if Extractor?
-      new Extractor base: '/app/'
+      new Extractor
+        base: @extractorOptions.urlBase
 
   pushOptioner: (options, file) ->
     digestLength: 8
@@ -46,6 +62,7 @@ class Crusher
       return pattern: null
     pattern: extractor.getPattern()
     substitute: (match, tag, done) ->
+      console.log 'puller tag=%s', tag
       parts = extractor.split match
       fsPath = mapper.toFsPath parts.path
       if not fsPath?
@@ -64,16 +81,18 @@ class Crusher
         return
 
   pusher: (options) ->
+    options = options or {}
     resolver = @resolver
     streamHasher
-      tagger: @tagger
+      tagger: @getTagger options.base
       optioner: @pushOptioner.bind @, options
     .on 'digest', (digest, oldTag, newTag) ->
+      console.log 'pusher tag=%s', oldTag
       resolver.push oldTag, null, digest: digest, tag: newTag
 
   puller: (options) ->
     streamReplacer
-      tagger: @tagger
+      tagger: @getTagger()
       optioner: @pullOptioner.bind @, options
 
 
