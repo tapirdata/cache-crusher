@@ -37,8 +37,8 @@ class Crusher
     if base?
       (file) -> path.join base, file.relative
     else
-      base = @cwd
-      (file) -> path.relative base, file.path
+      cwd = @cwd
+      (file) -> path.relative cwd, file.path
 
   getExtractor: (file) ->
     ext = path.extname file.path
@@ -49,7 +49,10 @@ class Crusher
       new Extractor
         base: @extractorOptions.urlBase
 
-  pushOptioner: (options, file) ->
+  pushOptioner: (tagger, options, file) ->
+    tag = tagger(file)
+    console.log 'pushOptioner tag=%s', tag
+    mapper = @mapper
     digestLength: 8
     rename: 'postfix'
 
@@ -83,9 +86,10 @@ class Crusher
   pusher: (options) ->
     options = options or {}
     resolver = @resolver
+    tagger = @getTagger options.base
     streamHasher
-      tagger: @getTagger options.base
-      optioner: @pushOptioner.bind @, options
+      tagger: tagger
+      optioner: @pushOptioner.bind @, tagger, options
     .on 'digest', (digest, oldTag, newTag) ->
       console.log 'pusher tag=%s', oldTag
       resolver.push oldTag, null, digest: digest, tag: newTag

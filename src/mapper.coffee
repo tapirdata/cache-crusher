@@ -9,6 +9,7 @@ class Entry
   constructor: (options) ->
     @fsRoot = options.fsRoot
     @urlRoot = options.urlRoot
+    @glob = options.glob
     @urlPattern = new RegExp "^#{escapeRegExp options.urlRoot}(.*)"
     @fsPattern = new RegExp "^#{escapeRegExp options.fsRoot}(.*)"
 
@@ -34,13 +35,13 @@ class Mapper
       entries.push new Entry cp
     @entries = entries
 
-  toFsPath: (urlPath) ->  
+  toFsPath: (urlPath) ->
     for entry in @entries
       fsPath = entry.toFsPath urlPath
       if fsPath?
         return fsPath
 
-  toUrlPath: (fsPath) ->  
+  toUrlPath: (fsPath) ->
     for entry in @entries
       urlPath = entry.toUrlPath fsPath
       if urlPath?

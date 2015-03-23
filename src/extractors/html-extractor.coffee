@@ -12,11 +12,6 @@ class HtmlExtractor extends Extractor
 
   preBrick: '(?:src|href)\\s*=\\s*'
 
-# factory = (options) ->
-#   new HtmlExtractor options
-# 
-# factory.Extractor = Extractor
-# factory.HtmlExtractor = HtmlExtractor
 
 module.exports = HtmlExtractor
 
