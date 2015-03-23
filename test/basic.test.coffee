@@ -103,7 +103,7 @@ makeTests = (title, set, options) ->
 
 
   counterparts = [
-    (urlRoot: '/app/', fsRoot: path.relative __dirname, pushSrcDir)
+    (urlRoot: '/app', fsRoot: path.relative(__dirname, pushSrcDir), globs: ['**/*.css', '**/*.js'])
   ]
 
   describe "#{title} with push #{modeName options.usePushBuffer}, with pull #{modeName options.usePullBuffer}", ->

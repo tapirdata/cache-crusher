@@ -1,29 +1,68 @@
 'use strict'
 
 path = require 'path'
+_ = require 'lodash'
+minimatch = require 'minimatch'
 
 escapeRegExp = (s) ->
   s.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
 
+
+ensureEndSlash = (p) ->
+  if p[p.length - 1] == '/'
+    p
+  else
+    p + '/'
+
+
 class Entry
   constructor: (options) ->
-    @fsRoot = options.fsRoot
-    @urlRoot = options.urlRoot
-    @glob = options.glob
-    @urlPattern = new RegExp "^#{escapeRegExp options.urlRoot}(.*)"
-    @fsPattern = new RegExp "^#{escapeRegExp options.fsRoot}(.*)"
+    @fsRoot = ensureEndSlash options.fsRoot
+    @urlRoot = ensureEndSlash options.urlRoot
+    @urlPattern = new RegExp "^#{escapeRegExp @urlRoot}(.*)"
+    @fsPattern = new RegExp "^#{escapeRegExp @fsRoot}(.*)"
+    @_setupMms options.globs
 
-  toFsPath: (urlPath) ->
+  _setupMms: (globs) ->
+    mms = null
+    if globs
+      mms = []
+      if not _.isArray globs
+        globs = [globs]
+      for glob in globs   
+        mm = new minimatch.Minimatch glob
+        mms.push mm
+      if mms.length == 0
+        mms = null
+    @_mms = mms    
+    return
+
+  checkGlob: (rel) ->
+    mms = @_mms
+    if not mms?
+      return true
+    ok = null
+    for mm in mms
+      if ok == null or ok == mm.negate
+        ok = mm.match rel
+    ok    
+
+  getUrlRel: (urlPath) ->
     match = @urlPattern.exec urlPath
     if not match?
       return
-    path.join @fsRoot, match[1]
+    rel = match[1]
+    if @checkGlob rel
+      rel
 
-  toUrlPath: (fsPath) ->
+  getFsRel: (fsPath) ->
     match = @fsPattern.exec fsPath
     if not match?
       return
-    path.join @urlRoot, match[1]
+    rel = match[1]
+    console.log 'getFsRel fsPath=%s rel=%s', fsPath, rel
+    if @checkGlob rel
+      rel
 
 
 class Mapper 
@@ -35,17 +74,32 @@ class Mapper
       entries.push new Entry cp
     @entries = entries
 
+  checkUrlPath: (urlPath) ->
+    for entry in @entries
+      rel = entry.getUrlRel urlPath
+      if rel?
+        return true
+    false  
+
+  checkFsPath: (fsPath) ->
+    console.log 'checkFsPath fsPath=%s', fsPath
+    for entry in @entries
+      rel = entry.getFsRel fsPath
+      if rel?
+        return true
+    false  
+
   toFsPath: (urlPath) ->
     for entry in @entries
-      fsPath = entry.toFsPath urlPath
-      if fsPath?
-        return fsPath
+      rel = entry.getUrlRel urlPath
+      if rel?
+        return path.join entry.fsRoot, rel
 
   toUrlPath: (fsPath) ->
     for entry in @entries
-      urlPath = entry.toUrlPath fsPath
-      if urlPath?
-        return urlPath
+      rel = entry.getFsRel fsPath
+      if rel?
+        return path.join entry.urlRoot, rel
 
 
 factory = (options) ->

@@ -51,10 +51,11 @@ class Crusher
 
   pushOptioner: (tagger, options, file) ->
     tag = tagger(file)
-    console.log 'pushOptioner tag=%s', tag
     mapper = @mapper
+    isOk = mapper.checkFsPath tag
+    console.log 'pushOptioner tag=%s', tag, isOk
     digestLength: 8
-    rename: 'postfix'
+    rename: if isOk then 'postfix' else null
 
   pullOptioner: (options, file) ->
     resolver = @resolver
@@ -68,18 +69,23 @@ class Crusher
       console.log 'puller tag=%s', tag
       parts = extractor.split match
       fsPath = mapper.toFsPath parts.path
+      console.log 'substitute: urlPath=%s fsPath=%j', parts.path, fsPath
       if not fsPath?
-        done new Error "no fs-path for url-path '#{parts.path}'"
+        # done new Error "no fs-path for url-path '#{parts.path}'"
+        done()
         return
       resolver.pull fsPath, (err, result) ->
         if err
           done err
           return
-        newUrlPath = mapper.toUrlPath result.tag
-        if not newUrlPath?
-          done new Error "no url-path for url-path '#{result.tag}'"
-          return
-        replacement = parts.preamble + newUrlPath + parts.postamble
+        if result.tag?
+          newUrlPath = mapper.toUrlPath result.tag
+          if not newUrlPath?
+            done new Error "no url-path for fs-path '#{result.tag}'"
+            return
+          console.log 'substitute: newUrlPath=%s', newUrlPath
+          replacement = parts.preamble + newUrlPath + parts.postamble
+        #TODO: append url-parameter
         done null, replacement
         return
 
