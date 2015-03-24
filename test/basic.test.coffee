@@ -11,7 +11,7 @@ cacheCrusher = require '../src/index'
 
 readTree = (srcRoot, srcBase, done) ->
   # console.log 'readTree srcRoot=%s, srcBase=%s', srcRoot, srcBase
-  walk = require 'walk' 
+  walk = require 'walk'
   walker = walk.walk srcRoot
   results = {}
 
@@ -54,12 +54,35 @@ compareResultsExps = (results, exps) ->
 
 fixtureDir = path.join __dirname, 'fixtures'
 
-makeTests = (title, set, options) ->
+makeTests = (title, options) ->
 
-  pushSrcDir = path.join fixtureDir, set.srcDir, 'push'
-  pullSrcDir = path.join fixtureDir, set.srcDir, 'pull'
-  pushExpDir = path.join fixtureDir, set.expDir, 'push'
-  pullExpDir = path.join fixtureDir, set.expDir, 'pull'
+  pushSrcDir = path.join fixtureDir, options.srcDir, 'push'
+  pullSrcDir = path.join fixtureDir, options.srcDir, 'pull'
+  pushExpDir = path.join fixtureDir, options.expDir, 'push'
+  pullExpDir = path.join fixtureDir, options.expDir, 'pull'
+
+  defaultCounterparts = [
+    {
+      urlRoot: '/app'
+      tagRoot: path.relative(__dirname, pushSrcDir)
+      globs: ['**/*.css', '**/*.js']
+      # crushOptions: digestLength: null
+    }
+  ]
+
+  defaultCrusherOptions =
+    # debug: true
+    # enabled: false
+    cwd: __dirname
+    extractor:
+      urlBase: '/app/'
+    mapper:
+      counterparts: defaultCounterparts
+    resolver:
+      timeout: 1000
+    crush:
+      rename: 'postfix'
+      # append: 'momo'
 
   pushResults = {}
   pullResults = {}
@@ -67,16 +90,16 @@ makeTests = (title, set, options) ->
   pushTapper = vinylTapper
     provideBuffer: true
     terminate: true
-  pushTapper.on 'tap', (file, buffer) ->  
-    pushResults[file.relative] = 
+  pushTapper.on 'tap', (file, buffer) ->
+    pushResults[file.relative] =
       file: file
       buffer: buffer
 
   pullTapper = vinylTapper
     provideBuffer: true
     terminate: true
-  pullTapper.on 'tap', (file, buffer) ->  
-    pullResults[file.relative] = 
+  pullTapper.on 'tap', (file, buffer) ->
+    pullResults[file.relative] =
       file: file
       buffer: buffer
 
@@ -95,18 +118,10 @@ makeTests = (title, set, options) ->
           return
         cb()
 
-  modeName = (useBuffer) ->
-    if useBuffer
-      'buffer'
-    else
-      'stream'
+  pushOptions = options.push or {}
+  pullOptions = options.pull or {}
 
-
-  counterparts = [
-    (urlRoot: '/app', fsRoot: path.relative(__dirname, pushSrcDir), globs: ['**/*.css', '**/*.js'])
-  ]
-
-  describe "#{title} with push #{modeName options.usePushBuffer}, with pull #{modeName options.usePullBuffer}", ->
+  describe title, ->
 
     crusher = null
 
@@ -120,33 +135,35 @@ makeTests = (title, set, options) ->
         streamDone = ->
           if --streamCount == 0
             done()
-          return  
+          return
 
-        crusher = cacheCrusher
-          cwd: __dirname
-          extractor:
-            urlBase: '/app/'
-          mapper:
-            counterparts: counterparts
-          resolver:
-            timeout: 1000
+        crusherOptions = defaultCrusherOptions
+        if options.crusher
+          crusherOptions = _.merge {}, crusherOptions, options.crusher
+        crusher = cacheCrusher crusherOptions
 
-        pushWell = vinylFs.src '**/*.*',
-          cwd: pushSrcDir 
-          buffer: options.usePushBuffer
-        pushWell
-          .pipe crusher.pusher()
-          .pipe pushTapper
-          .on 'end', streamDone
+        runPush = ->
+          pushWell = vinylFs.src '**/*.*',
+            cwd: pushSrcDir
+            buffer: pushOptions.useBuffer
+          pushWell
+            .pipe crusher.pusher()
+            .pipe pushTapper
+            .on 'end', streamDone
 
-        pullWell = vinylFs.src '**/*.*',
-          cwd: pullSrcDir 
-          buffer: options.usePullBuffer
-        pullWell
-          .pipe crusher.puller()
-          .pipe pullTapper
-          .on 'end', streamDone
-    
+        runPull = ->
+          pullWell = vinylFs.src '**/*.*',
+            cwd: pullSrcDir
+            buffer: pullOptions.useBuffer
+          pullWell
+            .pipe crusher.puller()
+            .pipe pullTapper
+            .on 'end', streamDone
+
+        setTimeout runPush, pushOptions.delay
+        setTimeout runPull, pullOptions.delay
+
+
     it 'should write the expected push files', ->
       compareResultsExps pushResults, pushExps
 
@@ -156,18 +173,27 @@ makeTests = (title, set, options) ->
 
 describe 'cache-crusher', ->
 
-  simpleSet =
+  makeTests 'Simple with pull buffer',
     srcDir: 'simple-src'
     expDir: 'simple-exp'
+    pull:
+      useBuffer: true
 
-  makeTests 'Simple',
-    simpleSet
-    usePushBuffer: false
-    usePullBuffer: true
+  makeTests 'Simple with push buffer',
+    srcDir: 'simple-src'
+    expDir: 'simple-exp'
+    push:
+      useBuffer: true
 
-  makeTests 'Simple',
-    simpleSet
-    usePushBuffer: true
-    usePullBuffer: false
+  makeTests 'Simple with push delay',
+    srcDir: 'simple-src'
+    expDir: 'simple-exp'
+    push:
+      delay: 500
 
+  makeTests 'Simple with pull delay',
+    srcDir: 'simple-src'
+    expDir: 'simple-exp'
+    pull:
+      delay: 500
 

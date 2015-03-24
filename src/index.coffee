@@ -2,6 +2,7 @@
 
 path = require 'path'
 _ = require 'lodash'
+stream = require 'readable-stream'
 streamHasher = require 'stream-hasher'
 streamReplacer = require 'stream-replacer'
 crushMapper = require './mapper'
@@ -10,7 +11,7 @@ crushExtractorCatalog = require './extractor-catalog'
 
 
 class Crusher
- 
+
   @defaultResolverOptions:
     timeout: 1000
 
@@ -19,8 +20,16 @@ class Crusher
   @defaultExtractorOptions:
     urlBase: '/static/'
 
+  @defaultCrushOptions:
+    rename: 'postfix'
+    digestLength: 8
+
   constructor: (options) ->
     options = options or {}
+    @enabled = options.enabled != false
+    if not @enabled
+      return
+
     resolverOptions = _.merge {}, @constructor.defaultResolverOptions, options.resolver
     mapperOptions = _.merge {}, @constructor.defaultMapperOptions, options.mapper
 
@@ -32,6 +41,16 @@ class Crusher
     if not extractorOptions.catalog
       extractorOptions.catalog = crushExtractorCatalog()
     @extractorOptions = extractorOptions
+
+    @crushOptions = _.merge {}, @constructor.defaultCrushOptions, options.crush
+
+    debug = options.debug
+    if debug
+      if typeof debug != 'function'
+        debug = console.error
+      @debug = debug
+
+  debug: ->
 
   getTagger: (base) ->
     if base?
@@ -49,58 +68,85 @@ class Crusher
       new Extractor
         base: @extractorOptions.urlBase
 
+  _getCrushOptions: (entry) ->
+    crushOptions = @crushOptions
+    if entry.crushOptions
+      crushOptions = _.merge {}, crushOptions, entry.crushOptions
+    crushOptions
+
   pushOptioner: (tagger, options, file) ->
-    tag = tagger(file)
+    tag = tagger file
     mapper = @mapper
-    isOk = mapper.checkFsPath tag
-    console.log 'pushOptioner tag=%s', tag, isOk
-    digestLength: 8
-    rename: if isOk then 'postfix' else null
+    map = mapper.getTagMap tag
+    @debug 'pushOptioner tag=%s map.entry=%s', tag, map.entry
+    if not map.entry?
+      return {}
+    @_getCrushOptions map.entry
 
   pullOptioner: (options, file) ->
-    resolver = @resolver
-    mapper = @mapper
+    self = @
+    # resolver = @resolver
+    # mapper = @mapper
+    # debug = @debug
     extractor = @getExtractor file
     if not extractor
       console.warn "no extractor for file '#{file.path}'"
       return pattern: null
     pattern: extractor.getPattern()
-    substitute: (match, tag, done) ->
-      console.log 'puller tag=%s', tag
+    substitute: (match, originTag, done) ->
+      self.debug 'puller originTag=%s', originTag
       parts = extractor.split match
-      fsPath = mapper.toFsPath parts.path
-      console.log 'substitute: urlPath=%s fsPath=%j', parts.path, fsPath
-      if not fsPath?
-        # done new Error "no fs-path for url-path '#{parts.path}'"
+      map = self.mapper.getUrlMap parts.path
+      self.debug 'substitute: url=%s map=%s', parts.path, map
+      if not map.entry?
         done()
         return
-      resolver.pull fsPath, (err, result) ->
+      self.resolver.pull map.entry.getTag(map.rel), originTag, (err, result) ->
         if err
           done err
           return
         if result.tag?
-          newUrlPath = mapper.toUrlPath result.tag
-          if not newUrlPath?
-            done new Error "no url-path for fs-path '#{result.tag}'"
-            return
-          console.log 'substitute: newUrlPath=%s', newUrlPath
-          replacement = parts.preamble + newUrlPath + parts.postamble
-        #TODO: append url-parameter
+          newUrl = map.entry.getUrl map.entry.getTagRel result.tag
+          self.debug 'substitute: newUrl=%s', newUrl, parts
+          replacement = parts.preamble + newUrl + parts.query + parts.postamble
+        else
+          crushOptions = self._getCrushOptions map.entry
+          if crushOptions?
+            append = crushOptions.append
+            if append?
+              newQuery = parts.query
+              if newQuery
+                newQuery += '&'
+              else
+                newQuery += '?'
+              if _.isFunction append
+                rev = append result.digest
+              else if _.isString append
+                rev = append + '=' + result.digest
+              else
+                rev = result.digest
+              newQuery += rev
+              replacement = parts.preamble + parts.path + newQuery + parts.postamble
         done null, replacement
         return
 
   pusher: (options) ->
+    if not @enabled
+      return new stream.PassThrough objectMode: true
     options = options or {}
     resolver = @resolver
     tagger = @getTagger options.base
+    debug = @debug
     streamHasher
       tagger: tagger
       optioner: @pushOptioner.bind @, tagger, options
     .on 'digest', (digest, oldTag, newTag) ->
-      console.log 'pusher tag=%s', oldTag
+      debug 'pusher tag=%s', oldTag
       resolver.push oldTag, null, digest: digest, tag: newTag
 
   puller: (options) ->
+    if not @enabled
+      return new stream.PassThrough objectMode: true
     streamReplacer
       tagger: @getTagger()
       optioner: @pullOptioner.bind @, options

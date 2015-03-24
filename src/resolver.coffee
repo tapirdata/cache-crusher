@@ -1,5 +1,12 @@
 'use strict'
 
+class TimeoutError extends Error
+  constructor: (@tag, @originTag, @timeout) ->
+    if @originTag
+      originText = "(by #{@originTag}) "
+    @message = "Timeout for tag '#{@tag} #{originText}after #{@timeout}ms"
+
+
 class Resolver
   constructor: (options) ->
     options = options or {}
@@ -10,7 +17,7 @@ class Resolver
     @map[tag]
 
   createEntry: (tag, err, data) ->
-    @map[tag] = 
+    @map[tag] =
       err: err
       data: data
       queue: []
@@ -27,7 +34,7 @@ class Resolver
     entry.resolved = true
     return
 
-  pull: (tag, done) ->
+  pull: (tag, originTag, done) ->
     entry = @map[tag]
     if entry?
       if entry.resolved
@@ -37,7 +44,7 @@ class Resolver
       entry = @createEntry(tag)
     entry.queue.push done
     if @timeout?
-      timerFn = => @resolveEntry entry, new Error "timeout for tag '#{tag}' after #{@timeout}ms"
+      timerFn = => @resolveEntry entry, new TimeoutError tag, originTag, @timeout
       entry.timer = setTimeout timerFn, @timeout
     return
 
@@ -56,7 +63,6 @@ factory = (options) ->
   new Resolver options
 
 factory.Resolver = Resolver
+factory.TimeoutError = TimeoutError
 
 module.exports = factory
-
-  

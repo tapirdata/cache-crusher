@@ -6,12 +6,14 @@ class Extractor
 
   preambleBrickNum: 2
   pathBrickNum: 1
+  queryBrickNum: 1
 
-  partBrick: '[\\w\\._-]+'
+  partBrick: '[^\/#?\'"]+'
   preBrick: ''
   postBrick: ''
   openBrick: '[\'"]'
   closeBrick: '\\2'
+  queryBrick: '(?:\\?[^#"\']*)?'
 
   constructor: (options) ->
     options = options or {}
@@ -25,9 +27,10 @@ class Extractor
       '(', @preBrick, ')'
       '(', @openBrick, ')'
       '(', @pathBrick, ')'
+      '(', @queryBrick, ')'
       '(', @closeBrick, ')'
       '(', @postBrick, ')'
-    ]  
+    ]
     brickParts.join ''
 
   createPattern: ->
@@ -43,9 +46,11 @@ class Extractor
   split: (match) ->
     preambleCut = 1 + @preambleBrickNum
     pathCut = preambleCut + @pathBrickNum
+    queryCut = pathCut + @queryBrickNum
     preamble: match.slice(1, preambleCut).join ''
     path: match.slice(preambleCut, pathCut).join ''
-    postamble: match.slice(pathCut).join ''
+    query: match.slice(pathCut, queryCut).join ''
+    postamble: match.slice(queryCut).join ''
 
 module.exports = Extractor
 

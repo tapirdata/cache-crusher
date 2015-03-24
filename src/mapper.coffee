@@ -17,10 +17,11 @@ ensureEndSlash = (p) ->
 
 class Entry
   constructor: (options) ->
-    @fsRoot = ensureEndSlash options.fsRoot
+    @crushOptions = options.crushOptions
+    @tagRoot = ensureEndSlash options.tagRoot
     @urlRoot = ensureEndSlash options.urlRoot
     @urlPattern = new RegExp "^#{escapeRegExp @urlRoot}(.*)"
-    @fsPattern = new RegExp "^#{escapeRegExp @fsRoot}(.*)"
+    @tagPattern = new RegExp "^#{escapeRegExp @tagRoot}(.*)"
     @_setupMms options.globs
 
   _setupMms: (globs) ->
@@ -29,12 +30,12 @@ class Entry
       mms = []
       if not _.isArray globs
         globs = [globs]
-      for glob in globs   
+      for glob in globs
         mm = new minimatch.Minimatch glob
         mms.push mm
       if mms.length == 0
         mms = null
-    @_mms = mms    
+    @_mms = mms
     return
 
   checkGlob: (rel) ->
@@ -45,27 +46,32 @@ class Entry
     for mm in mms
       if ok == null or ok == mm.negate
         ok = mm.match rel
-    ok    
+    ok
 
-  getUrlRel: (urlPath) ->
-    match = @urlPattern.exec urlPath
+  getUrlRel: (url) ->
+    match = @urlPattern.exec url
     if not match?
       return
     rel = match[1]
     if @checkGlob rel
       rel
 
-  getFsRel: (fsPath) ->
-    match = @fsPattern.exec fsPath
+  getTagRel: (tag) ->
+    match = @tagPattern.exec tag
     if not match?
       return
     rel = match[1]
-    console.log 'getFsRel fsPath=%s rel=%s', fsPath, rel
     if @checkGlob rel
       rel
 
+  getTag: (rel) ->
+    path.join @tagRoot, rel
 
-class Mapper 
+  getUrl: (rel) ->
+    path.join @urlRoot, rel
+
+
+class Mapper
 
   constructor: (options) ->
     options = options or {}
@@ -74,32 +80,33 @@ class Mapper
       entries.push new Entry cp
     @entries = entries
 
-  checkUrlPath: (urlPath) ->
-    for entry in @entries
-      rel = entry.getUrlRel urlPath
-      if rel?
-        return true
-    false  
+    debug = options.debug
+    if debug
+      if typeof debug != 'function'
+        debug = console.err
+      @debug = debug
 
-  checkFsPath: (fsPath) ->
-    console.log 'checkFsPath fsPath=%s', fsPath
-    for entry in @entries
-      rel = entry.getFsRel fsPath
-      if rel?
-        return true
-    false  
+  debug: ->
 
-  toFsPath: (urlPath) ->
+  getUrlMap: (url) ->
     for entry in @entries
-      rel = entry.getUrlRel urlPath
+      rel = entry.getUrlRel url
       if rel?
-        return path.join entry.fsRoot, rel
+        return {
+          entry: entry
+          rel: rel
+        }
+    return {}
 
-  toUrlPath: (fsPath) ->
+  getTagMap: (tag) ->
     for entry in @entries
-      rel = entry.getFsRel fsPath
+      rel = entry.getTagRel tag
       if rel?
-        return path.join entry.urlRoot, rel
+        return {
+          entry: entry
+          rel: rel
+        }
+    return {}
 
 
 factory = (options) ->
@@ -109,5 +116,5 @@ factory.Mapper = Mapper
 
 module.exports = factory
 
-  
+
 

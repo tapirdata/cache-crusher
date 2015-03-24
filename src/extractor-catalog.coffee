@@ -9,7 +9,7 @@ class ExtractorCatalog
     @_classes = {}
     @_handles = {}
     options = options or {}
-    scan = options.scan 
+    scan = options.scan
     if scan != false
       if _.isString scan
         scanDir = scan
@@ -23,19 +23,19 @@ class ExtractorCatalog
       E = require path.join scanDir, fileName
       @registerClass E, options
 
-  registerExts: (handle, exts) ->  
+  registerExts: (handle, exts) ->
     if exts
       if not _.isArray exts
         exts = [exts]
       for ext in exts
         @_handles[ext] = handle
 
-  registerClass: (E, options) ->  
+  registerClass: (E, options) ->
     options = options or {}
     @_classes[E.handle] = E
     if options.withExts != false
       @registerExts E.handle, E.exts
-  
+
   getClass: (handle) ->
     @_classes[handle]
 
@@ -50,6 +50,6 @@ factory.ExtractorCatalog = ExtractorCatalog
 module.exports = factory
 
 
-    
+
 
 
