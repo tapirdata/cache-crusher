@@ -1,12 +1,24 @@
 {
   "name": "cache-crusher",
   "version": "0.1.0",
-  "description": "",
+  "description": "A configurable cache buster for gulp",
   "main": "./lib",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register",
     "build": "rm -rf lib; coffee -c -b -o lib src",
     "prepublish": "npm run build"
+  },
+  "keywords": [
+    "gulp",
+    "cache",
+    "buster",
+    "busting",
+    "cache-busting",
+    "revision"
+  ],
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/tapirdata/cache-crusher"
   },
   "author": {
     "name": "Andreas Riedl",

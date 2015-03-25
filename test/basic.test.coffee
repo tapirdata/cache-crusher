@@ -173,27 +173,41 @@ makeTests = (title, options) ->
 
 describe 'cache-crusher', ->
 
-  makeTests 'Simple with pull buffer',
+  makeTests 'Simple postfix',
     srcDir: 'simple-src'
-    expDir: 'simple-exp'
+    expDir: 'simple-exp-postfix'
+
+  makeTests 'Simple postfix with pull buffer',
+    srcDir: 'simple-src'
+    expDir: 'simple-exp-postfix'
     pull:
       useBuffer: true
 
-  makeTests 'Simple with push buffer',
+  makeTests 'Simple postfix with push buffer',
     srcDir: 'simple-src'
-    expDir: 'simple-exp'
+    expDir: 'simple-exp-postfix'
     push:
       useBuffer: true
 
-  makeTests 'Simple with push delay',
+  makeTests 'Simple postfix with push delay',
     srcDir: 'simple-src'
-    expDir: 'simple-exp'
+    expDir: 'simple-exp-postfix'
     push:
       delay: 500
 
-  makeTests 'Simple with pull delay',
+  makeTests 'Simple postfix with pull delay',
     srcDir: 'simple-src'
-    expDir: 'simple-exp'
+    expDir: 'simple-exp-postfix'
     pull:
       delay: 500
+
+  makeTests 'Simple append',
+    srcDir: 'simple-src'
+    expDir: 'simple-exp-append'
+    crusher:
+      crush:
+        rename: false
+        append: 'rev'
+
+
 
