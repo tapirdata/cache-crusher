@@ -9,6 +9,7 @@
     "prepublish": "npm run build"
   },
   "keywords": [
+    "gulpplugin",
     "gulp",
     "cache",
     "buster",
