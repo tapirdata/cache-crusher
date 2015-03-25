@@ -1,0 +1,2 @@
+# cache-crusher [![Build Status](https://secure.travis-ci.org/tapirdata/cache-crusher.png?branch=master)](https://travis-ci.org/tapirdata/cache-crusher) [![Dependency Status](https://david-dm.org/tapirdata/cache-crusher.svg)](https://david-dm.org/tapirdata/cache-crusher) [![devDependency Status](https://david-dm.org/tapirdata/cache-crusher/dev-status.svg)](https://david-dm.org/tapirdata/cache-crusher#info=devDependencies)
+
