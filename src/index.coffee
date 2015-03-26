@@ -5,9 +5,6 @@ _ = require 'lodash'
 stream = require 'readable-stream'
 streamHasher = require 'stream-hasher'
 streamReplacer = require 'stream-replacer'
-crushMapper = require './mapper'
-crushResolver = require './resolver'
-crushExtractorCatalog = require './extractor-catalog'
 
 
 class Crusher
@@ -24,30 +21,31 @@ class Crusher
     rename: 'postfix'
     digestLength: 8
 
+  debug: ->
+
   constructor: (options) ->
     options = options or {}
-    resolverOptions = _.merge {}, @constructor.defaultResolverOptions, options.resolver
-    mapperOptions = _.merge {}, @constructor.defaultMapperOptions, options.mapper
-
-    @resolver = crushResolver resolverOptions
-    @mapper = crushMapper mapperOptions
     @cwd = options.cwd or process.cwd()
     @enabled = options.enabled != false
 
-    extractorOptions = _.merge {}, @constructor.defaultExtractorOptions, options.extractor
-    if not extractorOptions.catalog
-      extractorOptions.catalog = crushExtractorCatalog()
-    @extractorOptions = extractorOptions
+    resolverOptions = _.merge {}, @constructor.defaultResolverOptions, options.resolver
+    @resolver = resolverOptions._ or require('./resolver') resolverOptions
+
+    mapperOptions = _.merge {}, @constructor.defaultMapperOptions, options.mapper
+    @mapper = mapperOptions._ or require('./mapper') mapperOptions
 
     @crushOptions = _.merge {}, @constructor.defaultCrushOptions, options.crush
+
+    extractorOptions = _.merge {}, @constructor.defaultExtractorOptions, options.extractor
+    if not extractorOptions.catalog
+      extractorOptions.catalog = require('./extractor-catalog')()
+    @extractorOptions = extractorOptions
 
     debug = options.debug
     if debug
       if typeof debug != 'function'
         debug = console.error
       @debug = debug
-
-  debug: ->
 
   getTagger: (base) ->
     if base?
@@ -82,9 +80,6 @@ class Crusher
 
   pullOptioner: (options, file) ->
     self = @
-    # resolver = @resolver
-    # mapper = @mapper
-    # debug = @debug
     extractor = @getExtractor file
     if not extractor
       console.warn "no extractor for file '#{file.path}'"
