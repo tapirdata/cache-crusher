@@ -67,9 +67,9 @@ The only thing we must configure (but there is much more we *may*) is some mappi
 
 ## Architecture
 
-…will be documented soon.
-
 ![](doc/architecture.png)
+
+…will be documented soon.
 
 ## Options
 

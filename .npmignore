@@ -2,3 +2,4 @@ src/
 test/
 .npmignore
 .travis.yml
+doc/architecture.dia
