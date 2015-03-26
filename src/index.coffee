@@ -26,16 +26,13 @@ class Crusher
 
   constructor: (options) ->
     options = options or {}
-    @enabled = options.enabled != false
-    if not @enabled
-      return
-
     resolverOptions = _.merge {}, @constructor.defaultResolverOptions, options.resolver
     mapperOptions = _.merge {}, @constructor.defaultMapperOptions, options.mapper
 
     @resolver = crushResolver resolverOptions
     @mapper = crushMapper mapperOptions
     @cwd = options.cwd or process.cwd()
+    @enabled = options.enabled != false
 
     extractorOptions = _.merge {}, @constructor.defaultExtractorOptions, options.extractor
     if not extractorOptions.catalog
