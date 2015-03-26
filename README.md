@@ -69,6 +69,8 @@ The only thing we must configure (but there is much more we *may*) is some mappi
 
 …will be documented soon.
 
+![](doc/architecture.svg)
+
 ## Options
 
 …will be documented soon.
