@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created by diasvg.py -->
-<svg width="47.000cm" height="23.000cm" viewBox="1.000 -4.000 48.000 19.000"
+<svg width="47.000cm" height="25.000cm" viewBox="1.000 -4.000 48.000 21.000"
  xmlns="http://www.w3.org/2000/svg"
  xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect x="1.000" y="-4.000" width="47.000" height="25.000" fill="#F1DCDC" stroke="none" stroke-width="0"/>
+<rect x="1.000" y="-4.000" width="47.000" height="25.000" fill="none" stroke="#000000" stroke-width="0.001" />
 <rect x="11.500" y="2.000" width="7.000" height="2.000" fill="#ADD8E6" stroke="none" stroke-width="0"/>
 <rect x="11.500" y="2.000" width="7.000" height="2.000" fill="none" stroke="#000000" stroke-width="0.100" />
 <text x="15.000" y="3.195"  fill="#000000" text-anchor="middle" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
@@ -94,9 +96,9 @@ pull</text>
 push</text>
 <line x1="25.500" y1="14.000" x2="23.724" y2="14.000" stroke="#000000" stroke-width="0.100" />
 <polyline fill="none" stroke="#000000" stroke-width="0.100"  points="24.112,13.750 23.612,14.000 24.112,14.250 "/>
-<text x="3.500" y="-2.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+<text x="3.000" y="-2.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
 referrer files</text>
-<text x="3.500" y="-1.200"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+<text x="3.000" y="-1.200"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
 in</text>
 <text x="41.500" y="-2.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
 resource files</text>
@@ -108,9 +110,9 @@ look up class</text>
 by extension</text>
 <text x="13.000" y="6.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
 create</text>
-<text x="3.500" y="16.500"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+<text x="3.000" y="16.500"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
 referrer files</text>
-<text x="3.500" y="17.300"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+<text x="3.000" y="17.300"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
 out</text>
 <text x="42.000" y="16.500"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
 resource files</text>
@@ -136,5 +138,4 @@ files</text>
 original and</text>
 <text x="29.000" y="13.600"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
 renamed tags</text>
-<rect x="1.000" y="-4.000" width="47.000" height="23.000" fill="none" stroke="#000000" stroke-width="0.001" />
 </svg>
