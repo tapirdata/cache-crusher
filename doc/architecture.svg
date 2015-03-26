@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created by diasvg.py -->
+<svg width="43.328cm" height="21.302cm" viewBox="2.950 -3.050 46.278 18.252"
+ xmlns="http://www.w3.org/2000/svg"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect x="11.500" y="2.000" width="7.000" height="2.000" fill="#ADD8E6" stroke="none" stroke-width="0"/>
+<rect x="11.500" y="2.000" width="7.000" height="2.000" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="15.000" y="3.195"  fill="#000000" text-anchor="middle" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+extractorCatalog</text>
+<rect x="8.000" y="7.000" width="6.000" height="3.000" fill="#ADD8E6" stroke="none" stroke-width="0"/>
+<rect x="8.000" y="7.000" width="6.000" height="3.000" fill="none" stroke="#000000" stroke-width="0.100" stroke-dasharray="0.10,0.10"/>
+<text x="11.000" y="8.695"  fill="#000000" text-anchor="middle" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+extractor</text>
+<polygon fill="#ADD8E6" stroke="none" stroke-width="0.100" points="3.000,0.000 10.000,0.000 10.000,3.000 6.000,3.000 6.000,12.000 10.000,12.000 10.000,15.000 3.000,15.000 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="3.000,0.000 10.000,0.000 10.000,3.000 6.000,3.000 6.000,12.000 10.000,12.000 10.000,15.000 3.000,15.000 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="11.000,10.000 11.000,11.000 8.000,11.000 8.000,11.388 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="7.750,11.388 8.000,11.888 8.250,11.388 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="7.750,11.388 8.000,11.888 8.250,11.388 "/>
+<line x1="8.000" y1="12.000" x2="8.000" y2="17.388" stroke="#000000" stroke-width="0.100" />
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="7.750,17.388 8.000,17.888 8.250,17.388 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="7.750,17.388 8.000,17.888 8.250,17.388 "/>
+<ellipse cx="8.000" cy="1.500" rx="0.500" ry="0.500" fill="#FFFFFF" stroke="none"  /><ellipse cx="8.000" cy="1.500" rx="0.500" ry="0.500" fill="none" stroke="#000000"  stroke-width="0.100" /><ellipse cx="8.000" cy="1.500" rx="0.500" ry="0.500" fill="none" stroke="#000000"  stroke-width="0.100" /><polyline fill="none" stroke="#000000" stroke-width="0.100" stroke-dasharray="0.10,0.10" points="8.500,1.500 11.000,1.500 11.000,0.500 15.000,0.500 15.000,1.776 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="14.750,1.388 15.000,1.888 15.250,1.388 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="8.000,-3.000 8.000,-2.000 8.000,-2.000 8.000,0.388 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="7.750,0.388 8.000,0.888 8.250,0.388 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="7.750,0.388 8.000,0.888 8.250,0.388 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="8.000,2.000 8.000,6.000 11.000,6.000 11.000,6.388 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="10.750,6.388 11.000,6.888 11.250,6.388 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="10.750,6.388 11.000,6.888 11.250,6.388 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100" stroke-dasharray="0.10,0.10" d="M 15.000,4.000 C 15.000,7.000 12.000,2.000 12.000,6.776 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="11.750,6.388 12.000,6.888 12.250,6.388 "/>
+<text x="4.000" y="2.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+puller</text>
+<rect x="20.500" y="13.000" width="8.000" height="4.000" fill="#ADD8E6" stroke="none" stroke-width="0"/>
+<rect x="20.500" y="13.000" width="8.000" height="4.000" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="24.500" y="15.195"  fill="#000000" text-anchor="middle" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+resolver</text>
+<polyline fill="none" stroke="#000000" stroke-width="0.100" stroke-dasharray="0.30,0.30" points="14.000,8.000 14.000,8.000 20.000,8.000 20.000,1.000 22.500,1.000 22.500,1.450 "/>
+<path stroke="none" fill="#FFFFFF" stroke-width="0.100" d="M 22.500,1.950 C 22.375,1.950 22.250,1.825 22.250,1.700 C 22.250,1.575 22.375,1.450 22.500,1.450 C 22.625,1.450 22.750,1.575 22.750,1.700 C 22.750,1.825 22.625,1.950 22.500,1.950 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100"  d="M 22.500,1.950 C 22.375,1.950 22.250,1.825 22.250,1.700 C 22.250,1.575 22.375,1.450 22.500,1.450 C 22.625,1.450 22.750,1.575 22.750,1.700 C 22.750,1.825 22.625,1.950 22.500,1.950 "/>
+<rect x="20.500" y="2.000" width="8.000" height="4.000" fill="#ADD8E6" stroke="none" stroke-width="0"/>
+<rect x="20.500" y="2.000" width="8.000" height="4.000" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="24.500" y="4.195"  fill="#000000" text-anchor="middle" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+mapper</text>
+<polyline fill="none" stroke="#000000" stroke-width="0.100" stroke-dasharray="0.30,0.30" points="23.000,6.000 22.500,6.000 22.500,13.000 "/>
+<path stroke="none" fill="#000000" stroke-width="0.100" d="M 22.500,13.000 C 22.375,13.000 22.250,12.875 22.250,12.750 C 22.250,12.625 22.375,12.500 22.500,12.500 C 22.625,12.500 22.750,12.625 22.750,12.750 C 22.750,12.875 22.625,13.000 22.500,13.000 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100"  d="M 22.500,13.000 C 22.375,13.000 22.250,12.875 22.250,12.750 C 22.250,12.625 22.375,12.500 22.500,12.500 C 22.625,12.500 22.750,12.625 22.750,12.750 C 22.750,12.875 22.625,13.000 22.500,13.000 "/>
+<polygon fill="#ADD8E6" stroke="none" stroke-width="0.100" points="46.000,0.000 39.000,0.000 39.000,3.000 43.000,3.000 43.000,12.000 39.000,12.000 39.000,15.000 46.000,15.000 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="46.000,0.000 39.000,0.000 39.000,3.000 43.000,3.000 43.000,12.000 39.000,12.000 39.000,15.000 46.000,15.000 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100" stroke-dasharray="0.30,0.30" points="22.500,17.000 22.500,18.000 20.000,18.000 20.000,10.000 26.500,10.000 26.500,6.000 "/>
+<path stroke="none" fill="#000000" stroke-width="0.100" d="M 26.500,6.000 C 26.625,6.000 26.750,6.125 26.750,6.250 C 26.750,6.375 26.625,6.500 26.500,6.500 C 26.375,6.500 26.250,6.375 26.250,6.250 C 26.250,6.125 26.375,6.000 26.500,6.000 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100"  d="M 26.500,6.000 C 26.625,6.000 26.750,6.125 26.750,6.250 C 26.750,6.375 26.625,6.500 26.500,6.500 C 26.375,6.500 26.250,6.375 26.250,6.250 C 26.250,6.125 26.375,6.000 26.500,6.000 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100" stroke-dasharray="0.30,0.30" points="26.500,2.000 26.500,1.000 29.000,1.000 29.000,9.000 14.300,9.000 "/>
+<path stroke="none" fill="#FFFFFF" stroke-width="0.100" d="M 13.800,9.000 C 13.800,8.875 13.925,8.750 14.050,8.750 C 14.175,8.750 14.300,8.875 14.300,9.000 C 14.300,9.125 14.175,9.250 14.050,9.250 C 13.925,9.250 13.800,9.125 13.800,9.000 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100"  d="M 13.800,9.000 C 13.800,8.875 13.925,8.750 14.050,8.750 C 14.175,8.750 14.300,8.875 14.300,9.000 C 14.300,9.125 14.175,9.250 14.050,9.250 C 13.925,9.250 13.800,9.125 13.800,9.000 "/>
+<ellipse cx="41.012" cy="1.512" rx="0.512" ry="0.512" fill="#FFFFFF" stroke="none"  /><ellipse cx="41.012" cy="1.512" rx="0.512" ry="0.512" fill="none" stroke="#000000"  stroke-width="0.100" /><ellipse cx="41.012" cy="1.512" rx="0.512" ry="0.512" fill="none" stroke="#000000"  stroke-width="0.100" /><rect x="36.000" y="6.000" width="6.000" height="3.000" fill="#ADD8E6" stroke="none" stroke-width="0"/>
+<rect x="36.000" y="6.000" width="6.000" height="3.000" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="39.000" y="7.695"  fill="#000000" text-anchor="middle" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+hasher</text>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="41.012,2.074 41.012,4.500 39.000,4.500 39.000,5.388 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="38.750,5.388 39.000,5.888 39.250,5.388 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="38.750,5.388 39.000,5.888 39.250,5.388 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="39.000,9.000 39.000,10.500 41.000,10.500 41.000,12.388 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="40.750,12.388 41.000,12.888 41.250,12.388 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="40.750,12.388 41.000,12.888 41.250,12.388 "/>
+<line x1="41.000" y1="14.000" x2="41.000" y2="17.339" stroke="#000000" stroke-width="0.100" />
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="40.750,17.339 41.000,17.839 41.250,17.339 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="40.750,17.339 41.000,17.839 41.250,17.339 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="41.000,-3.000 41.000,-2.050 41.012,-2.050 41.012,0.388 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="40.762,0.388 41.012,0.888 41.262,0.388 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="40.762,0.388 41.012,0.888 41.262,0.388 "/>
+<text x="43.000" y="2.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+pusher</text>
+<rect x="30.000" y="3.500" width="4.000" height="2.000" fill="#ADD8E6" stroke="none" stroke-width="0"/>
+<rect x="30.000" y="3.500" width="4.000" height="2.000" fill="none" stroke="#000000" stroke-width="0.100" />
+<text x="32.000" y="4.695"  fill="#000000" text-anchor="middle" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+tagger</text>
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="40.500,1.512 38.000,1.512 38.000,1.500 31.500,1.500 31.500,2.888 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="31.250,2.888 31.500,3.388 31.750,2.888 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="31.250,2.888 31.500,3.388 31.750,2.888 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100" stroke-dasharray="0.30,0.30" points="31.500,5.500 31.500,5.500 31.500,11.000 26.000,11.000 26.000,13.000 "/>
+<path stroke="none" fill="#000000" stroke-width="0.100" d="M 26.000,13.000 C 25.875,13.000 25.750,12.875 25.750,12.750 C 25.750,12.625 25.875,12.500 26.000,12.500 C 26.125,12.500 26.250,12.625 26.250,12.750 C 26.250,12.875 26.125,13.000 26.000,13.000 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100"  d="M 26.000,13.000 C 25.875,13.000 25.750,12.875 25.750,12.750 C 25.750,12.625 25.875,12.500 26.000,12.500 C 26.125,12.500 26.250,12.625 26.250,12.750 C 26.250,12.875 26.125,13.000 26.000,13.000 "/>
+<ellipse cx="41.000" cy="13.500" rx="0.500" ry="0.500" fill="#FFFFFF" stroke="none"  /><ellipse cx="41.000" cy="13.500" rx="0.500" ry="0.500" fill="none" stroke="#000000"  stroke-width="0.100" /><ellipse cx="41.000" cy="13.500" rx="0.500" ry="0.500" fill="none" stroke="#000000"  stroke-width="0.100" /><polyline fill="none" stroke="#000000" stroke-width="0.100"  points="40.500,13.500 35.000,13.500 35.000,3.500 35.000,3.500 35.000,2.500 32.500,2.500 32.500,2.888 "/>
+<polygon fill="#FFFFFF" stroke="none" stroke-width="0.100" points="32.250,2.888 32.500,3.388 32.750,2.888 "/>
+<polygon fill="none" stroke="#000000" stroke-width="0.100"  points="32.250,2.888 32.500,3.388 32.750,2.888 "/>
+<polyline fill="none" stroke="#000000" stroke-width="0.100" stroke-dasharray="0.30,0.30" points="32.500,5.500 32.500,5.500 32.500,12.000 27.000,12.000 27.000,13.000 "/>
+<path stroke="none" fill="#000000" stroke-width="0.100" d="M 27.000,13.000 C 26.875,13.000 26.750,12.875 26.750,12.750 C 26.750,12.625 26.875,12.500 27.000,12.500 C 27.125,12.500 27.250,12.625 27.250,12.750 C 27.250,12.875 27.125,13.000 27.000,13.000 "/>
+<path stroke="#000000" fill="none" stroke-width="0.100"  d="M 27.000,13.000 C 26.875,13.000 26.750,12.875 26.750,12.750 C 26.750,12.625 26.875,12.500 27.000,12.500 C 27.125,12.500 27.250,12.625 27.250,12.750 C 27.250,12.875 27.125,13.000 27.000,13.000 "/>
+<line x1="24.500" y1="13.000" x2="24.500" y2="17.000" stroke="#000000" stroke-width="0.001" />
+<text x="22.000" y="14.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+pull</text>
+<text x="26.000" y="14.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+push</text>
+<line x1="25.500" y1="14.000" x2="23.724" y2="14.000" stroke="#000000" stroke-width="0.100" />
+<polyline fill="none" stroke="#000000" stroke-width="0.100"  points="24.112,13.750 23.612,14.000 24.112,14.250 "/>
+<text x="3.500" y="-2.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+referrer files</text>
+<text x="3.500" y="-1.200"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+in</text>
+<text x="41.500" y="-2.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+resource files</text>
+<text x="41.500" y="-1.200"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+in</text>
+<text x="11.000" y="-1.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+look up class</text>
+<text x="11.000" y="-0.200"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+by extension</text>
+<text x="13.000" y="6.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+create</text>
+<text x="3.500" y="16.500"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+referrer files</text>
+<text x="3.500" y="17.300"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+out</text>
+<text x="42.000" y="16.500"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+resource files</text>
+<text x="42.000" y="17.300"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+out</text>
+<text x="14.500" y="7.500"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+original urls</text>
+<text x="14.500" y="10.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+renamed urls</text>
+<text x="22.800" y="7.000"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+original</text>
+<text x="22.800" y="7.800"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+tags</text>
+<text x="16.800" y="14.600"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+renamed</text>
+<text x="16.800" y="15.400"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+tags</text>
+<text x="36.000" y="9.600"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+renamed</text>
+<text x="36.000" y="10.400"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+files</text>
+<text x="29.000" y="12.800"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+original and</text>
+<text x="29.000" y="13.600"  fill="#000000" text-anchor="start" font-size="0.80" font-family="sans" font-style="normal" font-weight="400">
+renamed tags</text>
+</svg>

@@ -67,10 +67,9 @@ The only thing we must configure (but there is much more we *may*) is some mappi
 
 ## Architecture
 
-![](doc/architecture.png)
+![Architecture diagram](https://rawgit.com/tapirdata/cache-crusher/master/doc/architecture.svg)
 
 …will be documented soon.
-
 ## Options
 
 …will be documented soon.
