@@ -5,7 +5,7 @@ Extractor = require './extractor'
 
 class ScriptExtractor extends Extractor
   @handle: 'script'
-  @exts: ['.js']
+  @exts: ['.js', '.coffee']
 
   constructor: (options) ->
     super options
