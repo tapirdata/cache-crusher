@@ -10,7 +10,7 @@ streamReplacer = require 'stream-replacer'
 class Crusher
 
   @defaultResolverOptions:
-    timeout: 1000
+    timeout: 10000
 
   @defaultMapperOptions: {}
 
@@ -21,12 +21,16 @@ class Crusher
     rename: 'postfix'
     digestLength: 8
 
-  debug: ->
-
   constructor: (options) ->
     options = options or {}
+
+    @setDebug options.debug
+    @setEnabled options.enabled
     @cwd = options.cwd or process.cwd()
-    @enabled = options.enabled != false
+    if typeof options.getTagger == 'function'
+      @getTagger = options.getTagger
+    if typeof options.getExtractor == 'function'
+      @getExtractor = options.getExtractor
 
     resolverOptions = _.merge {}, @constructor.defaultResolverOptions, options.resolver
     @resolver = resolverOptions._ or require('./resolver') resolverOptions
@@ -41,15 +45,20 @@ class Crusher
       extractorOptions.catalog = require('./extractor-catalog')()
     @extractorOptions = extractorOptions
 
-    debug = options.debug
-    if debug
-      if typeof debug != 'function'
-        debug = console.error
-      @debug = debug
+  setEnabled: (enabled) ->     
+    @enabled = enabled != false
+  
+  setDebug: (debug) ->     
+    if !debug
+      debug = ->
+    else if typeof debug != 'function'
+      debug = console.error
+    @debug = debug
 
-  getTagger: (base) ->
-    if base?
-      (file) -> path.join base, file.relative
+  getTagger: (options) ->
+    options = options or {}
+    if options.base?
+      (file) -> path.join options.base, file.relative
     else
       cwd = @cwd
       (file) -> path.relative cwd, file.path
@@ -73,7 +82,7 @@ class Crusher
     tag = tagger file
     mapper = @mapper
     map = mapper.getTagMap tag
-    @debug 'pushOptioner tag=%s map.entry=%s', tag, map.entry
+    @debug "crusher.pushOptioner: tag='%s' map=%s", tag, map
     if not map.entry?
       return {}
     @_getCrushOptions map.entry
@@ -86,10 +95,10 @@ class Crusher
       return pattern: null
     pattern: extractor.getPattern()
     substitute: (match, originTag, done) ->
-      self.debug 'puller originTag=%s', originTag
+      self.debug "crusher.puller: originTag='%s' match='%s'", originTag, match[0]
       parts = extractor.split match
       map = self.mapper.getUrlMap parts.path
-      self.debug 'substitute: url=%s map=%s', parts.path, map
+      self.debug "crusher.puller (substitute): url='%s' map=%s", parts.path, map
       if not map.entry?
         done()
         return
@@ -99,8 +108,8 @@ class Crusher
           return
         if result.tag?
           newUrl = map.entry.getUrl map.entry.getTagRel result.tag
-          self.debug 'substitute: newUrl=%s', newUrl, parts
           replacement = parts.preamble + newUrl + parts.query + parts.postamble
+          self.debug "crusher.puller (substitute): newUrl='%s'", newUrl
         else
           crushOptions = self._getCrushOptions map.entry
           if crushOptions?
@@ -119,6 +128,7 @@ class Crusher
                 rev = result.digest
               newQuery += rev
               replacement = parts.preamble + parts.path + newQuery + parts.postamble
+        self.debug "crusher.puller (substitute): replacement='%s'", replacement
         done null, replacement
         return
 
@@ -127,13 +137,13 @@ class Crusher
       return new stream.PassThrough objectMode: true
     options = options or {}
     resolver = @resolver
-    tagger = @getTagger options.base
+    tagger = @getTagger options.tagger
     debug = @debug
     streamHasher
       tagger: tagger
       optioner: @pushOptioner.bind @, tagger, options
     .on 'digest', (digest, oldTag, newTag) ->
-      debug 'pusher tag=%s', oldTag
+      debug "cusher.pusher: tag='%s'", oldTag
       resolver.push oldTag, null, digest: digest, tag: newTag
 
   puller: (options) ->

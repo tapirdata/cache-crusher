@@ -92,7 +92,27 @@ A **pusher** is a vinyl transform stream to pass your resource files through. Ea
 
 Optionally the **pusher** can be configures to not rename the resource file, but just emit the created digest together with the original **tag** and let the **resolver** append that digest as some query string. 
 
-## Options
+## API
 
-…will be documented soon.
+#### var crusher = cacheCrusher(options);
+
+creates a new crusher. Recognized options are:
+
+- `enabled` (`boolean`, default `true`): Enable the whole **crusher**. If this is `false`, `puller()` and `pusher()` create simple passthrough-streams. You can use this to disable **crusher** for non-production builds. You can use `cruser.setEnabled` to change this setting after construction.
+- `debug` (`boolean` or `console.log`-like `function`): Log some usefull stuff to this functions, if `true', user `console.error`.
+- `cwd` (a path-`string`, default: `process.cwd()`): This is used by the default **tagger**, that generates the **tag** as the file's path relative to `crusher.cwd`
+- `getTagger` (`function`): use this to replace `crusher.getTagger`.
+- `getExtractor` (`function`): use this to replace `crusher.getExtractor`.
+- `resolver` (`object`): the options to create the **resolver**:
+  - `_`: replace the standard **replacer** with this (derive from `resolver.Resolver` or create an object that provides the same interface).
+  - `timeout`: pull-timeout in ms (default: `10000`). If this is set, a `TimeoutError` will be thrown, when a pull-request has not been resolved for this duration.
+- `mapper` (`object`): the options to create the **mapper**:
+  - `_`: replace the standard **mapper** with this (derive from `mapper.Mapper` or create an object that provides the same interface).
+  - `counterparts`: an array of objects that define a relatinship between **urls** and **tags**. Each of theese may have these properties: 
+    - `urlRoot`
+    - `tgtRoot`
+    - `globs`
+    - `globOptions`
+    - `crushOptions`
+
 

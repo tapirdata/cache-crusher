@@ -65,7 +65,9 @@ makeTests = (title, options) ->
     {
       urlRoot: '/app'
       tagRoot: path.relative(__dirname, pushSrcDir)
-      globs: ['**/*.css', '**/*.js']
+      # globs: ['**/*.css', '**/*.js']
+      globs: ['*.css', '*.js']
+      globOptions: matchBase: true
       # crushOptions: digestLength: null
     }
   ]

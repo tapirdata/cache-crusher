@@ -1,5 +1,6 @@
 'use strict'
 
+util = require 'util'
 path = require 'path'
 _ = require 'lodash'
 minimatch = require 'minimatch'
@@ -17,21 +18,24 @@ ensureEndSlash = (p) ->
 
 class Entry
   constructor: (options) ->
+    @globs = options.globs
+    @globOptions = options.globOptions
     @crushOptions = options.crushOptions
     @tagRoot = ensureEndSlash options.tagRoot
     @urlRoot = ensureEndSlash options.urlRoot
     @urlPattern = new RegExp "^#{escapeRegExp @urlRoot}(.*)"
     @tagPattern = new RegExp "^#{escapeRegExp @tagRoot}(.*)"
-    @_setupMms options.globs
+    @_setupMms()
 
-  _setupMms: (globs) ->
+  _setupMms: ->
+    globs = @globs
     mms = null
     if globs
       mms = []
       if not _.isArray globs
         globs = [globs]
       for glob in globs
-        mm = new minimatch.Minimatch glob
+        mm = new minimatch.Minimatch glob, @globOptions
         mms.push mm
       if mms.length == 0
         mms = null
@@ -70,6 +74,16 @@ class Entry
   getUrl: (rel) ->
     path.join @urlRoot, rel
 
+  toString: () ->
+    util.format "Entry({urlRoot='%s', tagRoot='%s', globs=%s, crushOptions=%j})", @urlRoot, @tagRoot, @globs, @crushOptions
+
+
+class Map
+  constructor: (@entry, @rel) ->
+
+  toString: () ->
+    util.format "Map({entry=%s, rel=%s})", @entry, @rel
+
 
 class Mapper
 
@@ -80,32 +94,18 @@ class Mapper
       entries.push new Entry cp
     @entries = entries
 
-    debug = options.debug
-    if debug
-      if typeof debug != 'function'
-        debug = console.err
-      @debug = debug
-
-  debug: ->
-
   getUrlMap: (url) ->
     for entry in @entries
       rel = entry.getUrlRel url
       if rel?
-        return {
-          entry: entry
-          rel: rel
-        }
+        return new Map entry, rel
     return {}
 
   getTagMap: (tag) ->
     for entry in @entries
       rel = entry.getTagRel tag
       if rel?
-        return {
-          entry: entry
-          rel: rel
-        }
+        return new Map entry, rel
     return {}
 
 
