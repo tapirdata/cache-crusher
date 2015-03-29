@@ -78,11 +78,24 @@ class Entry
     util.format "Entry({urlRoot='%s', tagRoot='%s', globs=%s, crushOptions=%j})", @urlRoot, @tagRoot, @globs, @crushOptions
 
 
-class Map
+class Hit
   constructor: (@entry, @rel) ->
 
+  getCrushOptions: (options) ->
+    if @entry.crushOptions
+      options = _.merge {}, options, @entry.crushOptions
+    options  
+
+  getTag: (url) ->
+    rel = if url? then @entry.getUrlRel url else @rel
+    @entry.getTag rel
+
+  getUrl: (tag) ->  
+    rel = if tag? then @entry.getTagRel tag else @rel
+    @entry.getUrl rel
+
   toString: () ->
-    util.format "Map({entry=%s, rel=%s})", @entry, @rel
+    util.format "Hit({entry=%s, rel=%s})", @entry, @rel
 
 
 class Mapper
@@ -94,19 +107,17 @@ class Mapper
       entries.push new Entry cp
     @entries = entries
 
-  getUrlMap: (url) ->
+  getUrlHit: (url) ->
     for entry in @entries
       rel = entry.getUrlRel url
       if rel?
-        return new Map entry, rel
-    return {}
+        return new Hit entry, rel
 
-  getTagMap: (tag) ->
+  getTagHit: (tag) ->
     for entry in @entries
       rel = entry.getTagRel tag
       if rel?
-        return new Map entry, rel
-    return {}
+        return new Hit entry, rel
 
 
 factory = (options) ->

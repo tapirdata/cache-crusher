@@ -72,20 +72,13 @@ class Crusher
       new Extractor
         base: @extractorOptions.urlBase
 
-  _getCrushOptions: (entry) ->
-    crushOptions = @crushOptions
-    if entry.crushOptions
-      crushOptions = _.merge {}, crushOptions, entry.crushOptions
-    crushOptions
-
   pushOptioner: (tagger, options, file) ->
     tag = tagger file
-    mapper = @mapper
-    map = mapper.getTagMap tag
-    @debug "crusher.pushOptioner: tag='%s' map=%s", tag, map
-    if not map.entry?
+    hit = @mapper.getTagHit tag
+    @debug "crusher.pushOptioner: tag='%s' hit=%s", tag, hit
+    if not hit?
       return {}
-    @_getCrushOptions map.entry
+    hit.getCrushOptions @crushOptions
 
   pullOptioner: (options, file) ->
     self = @
@@ -97,21 +90,21 @@ class Crusher
     substitute: (match, originTag, done) ->
       self.debug "crusher.puller: originTag='%s' match='%s'", originTag, match[0]
       parts = extractor.split match
-      map = self.mapper.getUrlMap parts.path
-      self.debug "crusher.puller (substitute): url='%s' map=%s", parts.path, map
-      if not map.entry?
+      hit = self.mapper.getUrlHit parts.path
+      self.debug "crusher.puller (substitute): url='%s' hit=%s", parts.path, hit
+      if not hit?
         done()
         return
-      self.resolver.pull map.entry.getTag(map.rel), originTag, (err, result) ->
+      self.resolver.pull hit.getTag(), originTag, (err, result) ->
         if err
           done err
           return
         if result.tag?
-          newUrl = map.entry.getUrl map.entry.getTagRel result.tag
+          newUrl = hit.getUrl result.tag
           replacement = parts.preamble + newUrl + parts.query + parts.postamble
           self.debug "crusher.puller (substitute): newUrl='%s'", newUrl
         else
-          crushOptions = self._getCrushOptions map.entry
+          crushOptions = hit.getCrushOptions self.crushOptions
           if crushOptions?
             append = crushOptions.append
             if append?
