@@ -64,13 +64,8 @@ class Crusher
       (file) -> path.relative cwd, file.path
 
   getExtractor: (file) ->
-    ext = path.extname file.path
     catalog = @extractorOptions.catalog
-    handle = catalog.getHandle ext
-    Extractor = catalog.getClass handle
-    if Extractor?
-      new Extractor
-        base: @extractorOptions.urlBase
+    catalog.getExtractor file, @extractorOptions
 
   pushOptioner: (tagger, options, file) ->
     tag = tagger file

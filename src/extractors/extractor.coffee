@@ -17,10 +17,10 @@ class Extractor
 
   constructor: (options) ->
     options = options or {}
-    @base = options.base or ''
+    @urlBase = options.urlBase or ''
     if options.partBrick
       @partBrick = options.partBrick
-    @pathBrick = "#{@base}(?:#{@partBrick}/)*#{@partBrick}"
+    @pathBrick = "#{@urlBase}(?:#{@partBrick}/)*#{@partBrick}"
 
   getBrick: ->
     brickParts = [

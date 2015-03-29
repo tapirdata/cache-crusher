@@ -20,8 +20,8 @@ class ExtractorCatalog
   scanExtractors: (scanDir, options) ->
     fileNames = fs.readdirSync scanDir
     for fileName in fileNames
-      E = require path.join scanDir, fileName
-      @registerClass E, options
+      Extractor = require path.join scanDir, fileName
+      @registerClass Extractor, options
 
   registerExts: (handle, exts) ->
     if exts
@@ -30,17 +30,24 @@ class ExtractorCatalog
       for ext in exts
         @_handles[ext] = handle
 
-  registerClass: (E, options) ->
+  registerClass: (Extractor, options) ->
     options = options or {}
-    @_classes[E.handle] = E
+    @_classes[Extractor.handle] = Extractor
     if options.withExts != false
-      @registerExts E.handle, E.exts
+      @registerExts Extractor.handle, Extractor.exts
 
   getClass: (handle) ->
     @_classes[handle]
 
   getHandle: (ext) ->
     @_handles[ext]
+
+  getExtractor: (file, options) ->
+    ext = path.extname file.path
+    handle = @getHandle ext
+    Extractor = @getClass handle
+    if Extractor?
+      new Extractor options
 
 
 factory = (options) ->
