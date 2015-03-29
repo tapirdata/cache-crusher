@@ -52,21 +52,18 @@ class Entry
         ok = mm.match rel
     ok
 
+  checkRel: (rel) ->
+    @checkGlob rel
+
   getUrlRel: (url) ->
     match = @urlPattern.exec url
-    if not match?
-      return
-    rel = match[1]
-    if @checkGlob rel
-      rel
+    if match?
+      match[1]
 
   getTagRel: (tag) ->
     match = @tagPattern.exec tag
-    if not match?
-      return
-    rel = match[1]
-    if @checkGlob rel
-      rel
+    if match?
+      match[1]
 
   getTag: (rel) ->
     path.join @tagRoot, rel
@@ -110,13 +107,13 @@ class Mapper
   getUrlHit: (url) ->
     for entry in @entries
       rel = entry.getUrlRel url
-      if rel?
+      if rel? and entry.checkRel rel
         return new Hit entry, rel
 
   getTagHit: (tag) ->
     for entry in @entries
       rel = entry.getTagRel tag
-      if rel?
+      if rel? and entry.checkRel rel
         return new Hit entry, rel
 
 
