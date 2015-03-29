@@ -52,8 +52,10 @@ class Resolver
     entry = @map[tag]
     if entry?
       if entry.resolved
-        throw new Error "duplicate tag: '#{tag}'"
-      @resolveEntry entry, err, data
+        if not entry.err
+          throw new Error "duplicate tag: '#{tag}'"
+      else
+        @resolveEntry entry, err, data
     else
       entry = @createEntry(tag, err, data)
       entry.resolved = true
