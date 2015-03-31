@@ -17,7 +17,7 @@ class Crusher
   @defaultExtractorOptions:
     urlBase: '/static/'
 
-  @defaultCrushOptions:
+  @defaultHasherOptions:
     rename: 'postfix'
     digestLength: 8
 
@@ -38,17 +38,17 @@ class Crusher
     mapperOptions = _.merge {}, @constructor.defaultMapperOptions, options.mapper
     @mapper = mapperOptions._ or require('./mapper') mapperOptions
 
-    @crushOptions = _.merge {}, @constructor.defaultCrushOptions, options.crush
+    @hasherOptions = _.merge {}, @constructor.defaultHasherOptions, options.hasher
 
     extractorOptions = _.merge {}, @constructor.defaultExtractorOptions, options.extractor
     if not extractorOptions.catalog
       extractorOptions.catalog = require('./extractor-catalog')()
     @extractorOptions = extractorOptions
 
-  setEnabled: (enabled) ->     
+  setEnabled: (enabled) ->
     @enabled = enabled != false
-  
-  setDebug: (debug) ->     
+
+  setDebug: (debug) ->
     if !debug
       debug = ->
     else if typeof debug != 'function'
@@ -57,8 +57,8 @@ class Crusher
 
   getTagger: (options) ->
     options = options or {}
-    if options.base?
-      (file) -> path.join options.base, file.relative
+    if options.relativeBase?
+      (file) -> path.join options.relativeBase, file.relative
     else
       cwd = @cwd
       (file) -> path.relative cwd, file.path
@@ -73,7 +73,7 @@ class Crusher
     @debug "crusher.pushOptioner: tag='%s' hit=%s", tag, hit
     if not hit?
       return {}
-    hit.getCrushOptions @crushOptions
+    hit.getHasherOptions @hasherOptions
 
   pullOptioner: (options, file) ->
     self = @
@@ -99,9 +99,9 @@ class Crusher
           replacement = parts.preamble + newUrl + parts.query + parts.postamble
           self.debug "crusher.puller (substitute): newUrl='%s'", newUrl
         else
-          crushOptions = hit.getCrushOptions self.crushOptions
-          if crushOptions?
-            append = crushOptions.append
+          hasherOptions = hit.getHasherOptions self.hasherOptions
+          if hasherOptions?
+            append = hasherOptions.append
             if append?
               newQuery = parts.query
               if newQuery
