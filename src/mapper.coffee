@@ -78,9 +78,9 @@ class Entry
 class Hit
   constructor: (@entry, @rel) ->
 
-  getCrushOptions: (options) ->
-    if @entry.crushOptions
-      options = _.merge {}, options, @entry.crushOptions
+  getHasherOptions: (options) ->
+    if @entry.hasherOptions
+      options = _.merge {}, options, @entry.hasherOptions
     options  
 
   getTag: (url) ->
