@@ -68,7 +68,7 @@ makeTests = (title, options) ->
       # globs: ['**/*.css', '**/*.js']
       globs: ['*.css', '*.js']
       globOptions: matchBase: true
-      # crushOptions: digestLength: null
+      # hasherOptions: digestLength: null
     }
   ]
 
@@ -82,7 +82,7 @@ makeTests = (title, options) ->
       counterparts: defaultCounterparts
     resolver:
       timeout: 1000
-    crush:
+    hasher:
       rename: 'postfix'
       # append: 'momo'
 
@@ -207,7 +207,7 @@ describe 'cache-crusher', ->
     srcDir: 'simple-src'
     expDir: 'simple-exp-append'
     crusher:
-      crush:
+      hasher:
         rename: false
         append: 'rev'
 

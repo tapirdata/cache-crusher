@@ -38,8 +38,8 @@
     "lodash": "^3.4.0",
     "minimatch": "^2.0.4",
     "readable-stream": "^1.0.33",
-    "stream-hasher": "^0.4.0",
-    "stream-replacer": "^0.4.0"
+    "stream-hasher": "^0.4.1",
+    "stream-replacer": "^0.4.1"
   },
   "license": "MIT"
 }
