@@ -20,8 +20,14 @@ class ExtractorCatalog
   scanExtractors: (scanDir, options) ->
     fileNames = fs.readdirSync scanDir
     for fileName in fileNames
-      Extractor = require path.join scanDir, fileName
-      @registerClass Extractor, options
+      extractorPath = path.join scanDir, fileName
+      try
+        Extractor = require extractorPath
+      catch err
+        console.log "cannnot require extractor '#{extractorPath}'", err
+        continue
+      if typeof Extractor is 'function' and Extractor.handle?
+        @registerClass Extractor, options
 
   registerExts: (handle, exts) ->
     if exts
