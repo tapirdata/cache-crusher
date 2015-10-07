@@ -67,7 +67,7 @@ The only thing we must configure (but there is much more we *may*) is some mappi
 
 ---
 
-A more complete development-setup that uses `cache-crusher` may be be created with this [yeoman](http://yeoman.io) generator:
+A more complete development-setup that uses `cache-crusher` may be be created by this [yeoman](http://yeoman.io) generator:
 [browserify-versatile](https://www.npmjs.com/package/generator-browserify-versatile).
 
 ## Architecture
@@ -109,8 +109,12 @@ Creates a new crusher. Recognized options are:
 - `hasher` (object, default: `{rename: 'postfix', digestLength: 8}`): the options to create the **hasher**.
 
 ##### extractor options
-  - `catalog`
-  - `urlBase`
+
+Set `crusher.extractorOptions`, which is used by `getExtractor` to create the **extractor**. Especially:
+- `catalog`: specify an **extractorCatalog**, which should provide this interface:
+  - `catalog.getExtractor(file, options)`: returns an **extractor**. 
+- `urlBase` (default `'/static/'`): used by standard **extractor*s.
+
 
 ##### mapper options
 
@@ -145,9 +149,9 @@ Creates a new crusher. Recognized options are:
           }
         ]
     ```
-      - would map the **url** `'/static/foo/bar.js'` to the **tag** `'src/client/scripts/foo/bar.js'`.
-      - would map the **url** `'/static/foo/bar.jpg'` to the **tag** `'src/assets/foo/bar.jpg'`.
-      - would not map the **url** `'/static/images/favicon.ico'`, since it is excluded by `globs`.
+    - would map the **url** `'/static/foo/bar.js'` to the **tag** `'src/client/scripts/foo/bar.js'`.
+    - would map the **url** `'/static/foo/bar.jpg'` to the **tag** `'src/assets/foo/bar.jpg'`.
+    - would not map the **url** `'/static/images/favicon.ico'`, since it is excluded by `globs`.
 
 
 ##### resolver options
@@ -168,14 +172,62 @@ Creates a new crusher. Recognized options are:
     - string *name*: "?*name*=*digest*"
     - `function` *fn*`: "?" + *fn*(*digest*)
 
+#### crusher.getTagger(options)
 
-#### crusher.puller(options)
+This is the default **tagger** factory. It recognizes the following options:
+- ` _ ` (`function(file)`): use this function as **tagger**.
+- `relativeBase`: create **tag** as `file.relative` relative to `relativeBase`.
+- `base`: create **tag** as `file.path` relative to `base`.
 
-Create a new pull-stream (to pass referer files through).
+Empty `options` is equivalent to `{base: crusher.cwd}`.
+
+#### crusher.getExtractor(file)
+
+This is the default **extractor** factory. It uses an **extractorCatalog**, specified  by `crusher.extractorOptions.catalog`, if none is specified, a default one is provided (see later).
+
+#### crusher.puller()
+
+GCreate a new pull-stream (to pass referer files through).
 
 #### crusher.pusher(options)
 
 Create a new push-stream (to pass resource files through).
+`options.tagger` are used to create the **tagger**.
 
-…to be continued.
+## The default *extractorCatalog*
 
+- `getExtractor(file, options)`: uses this three-step-algorithm to create the **extractor**:
+  - pass file's extension to `getHandle` look up a *handle*
+  - pass that *handle* to `getClass` to look up an **extractor**-class.
+  - instantiate that class (with `options`) to get an **extractor**.
+
+- `registerClass(Extractor, options)`: register new class `Extractor` by its `handle`. Set `options.withExts` to `false` to prevent auto extension association.
+- `registerExts(handle, exts)`: associate extension(s) `exts` with `handle`. For example: To let your .foo-files be processed by `ScriptExtractor` call `crusher.extractorOptions.catalog.registerExts('script', '.foo')`.
+- `scanExtractors(dir, options)`: scan directory `dir` for files that define **extractor**-classes. `options` is passed to `registerClass`.
+
+These basic **extractor**-classes are provided for now:
+
+class              | handle   | extensions               | comments
+|------------------|----------|--------------------------|---------
+|`Extractor`       | 'base'   |                          | looks for strings (enclosed in single or double quotes)
+|`ScriptExtractor` | 'script' | '.js', '.coffee'         | looks for strings in escaped quotes (as seen in compiled templates), too. 
+|`HtmlExtractor`   | 'html'   | '.html', '.xml', '.jade' | looks for strings preceeded with 'src=' or 'href='
+
+All standard **extractor**s use `option.urlBase` as a required initial part of **urls** to be extracted.
+Example:
+
+```js
+crusher = cacheCrusher({
+  extractor: {
+    urlRoot: '/app/assets/'
+  },
+  mapper: {
+    counterparts: [{urlRoot: '/app', tagRoot: 'src/client'}]
+  }
+});
+```
+Notes:
+- There has to be some corespondence between `extractor.urlRoot` and some `counterpart.urlRoot` to effectively extract anything at all.
+- You may omit the closing '/' for `counterpart.urlRoot` and `counterparts.tagRoot`. It is appended automatically. 
+- You may just set `urlRoot: ''` for the cost of some performance pealty: A a lot of none-**url** strings will be passed to **mapper** (and rejected here) instead of just passing them through by avoiding a `RegExp`-match.   
+ 

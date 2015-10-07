@@ -37,7 +37,6 @@ class Crusher
 
     mapperOptions = _.merge {}, @constructor.defaultMapperOptions, options.mapper
     @mapper = mapperOptions._ or require('./mapper') mapperOptions
-
     @hasherOptions = _.merge {}, @constructor.defaultHasherOptions, options.hasher
 
     extractorOptions = _.merge {}, @constructor.defaultExtractorOptions, options.extractor
@@ -57,11 +56,13 @@ class Crusher
 
   getTagger: (options) ->
     options = options or {}
+    if typeof options._ == 'function'
+      return options._
     if options.relativeBase?
       (file) -> path.join options.relativeBase, file.relative
     else
-      cwd = @cwd
-      (file) -> path.relative cwd, file.path
+      base = if options.base? then options.base else @cwd
+      (file) -> path.relative base, file.path
 
   getExtractor: (file) ->
     catalog = @extractorOptions.catalog
