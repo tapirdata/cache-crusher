@@ -1,6 +1,6 @@
 {
   "name": "cache-crusher",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A configurable cache buster for gulp",
   "main": "./lib",
   "scripts": {
@@ -31,15 +31,15 @@
     "coffee-script": "^1.10.0",
     "mocha": "^2.3.4",
     "vinyl-fs": "^2.3.1",
-    "vinyl-tapper": "^0.2.6",
+    "vinyl-tapper": "^0.3.0",
     "walk": "^2.3.9"
   },
   "dependencies": {
     "lodash": "^4.0.0",
     "minimatch": "^3.0.0",
     "readable-stream": "^2.0.5",
-    "stream-hasher": "^0.4.2",
-    "stream-replacer": "^0.4.2"
+    "stream-hasher": "^0.5.0",
+    "stream-replacer": "^0.5.0"
   },
   "license": "MIT"
 }
