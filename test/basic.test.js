@@ -8,7 +8,7 @@ import cacheCrusher from '../src/index';
 import walk from 'walk';
 
 
-let readTree = function(srcRoot, srcBase, done) {
+function readTree(srcRoot, srcBase, done) {
   let walker = walk.walk(srcRoot);
   let results = {};
 
@@ -31,9 +31,9 @@ let readTree = function(srcRoot, srcBase, done) {
 };
 
 
-let compareResultsExps = function(results, exps) {
-  let misses = [];
-  let extras = [];
+function compareResultsExps(results, exps) {
+  const misses = [];
+  const extras = [];
   for (var p in exps) {
     if (results[p] == null) {
       misses.push(p);
@@ -57,23 +57,23 @@ let compareResultsExps = function(results, exps) {
   );
 
   for (p in results) {
-    let result = results[p];
-    let expBuffer = exps[p];
+    const result = results[p];
+    const expBuffer = exps[p];
     expect(result.buffer.toString('utf8')).to.be.equal(expBuffer.toString('utf8'));
   }  
 };
 
 
-let fixtureDir = path.join(__dirname, 'fixtures');
+const fixtureDir = path.join(__dirname, 'fixtures');
 
-let makeTests = function(title, options) {
+function makeTests(title, options) {
 
-  let pushSrcDir = path.join(fixtureDir, options.srcDir, 'push');
-  let pullSrcDir = path.join(fixtureDir, options.srcDir, 'pull');
-  let pushExpDir = path.join(fixtureDir, options.expDir, 'push');
-  let pullExpDir = path.join(fixtureDir, options.expDir, 'pull');
+  const pushSrcDir = path.join(fixtureDir, options.srcDir, 'push');
+  const pullSrcDir = path.join(fixtureDir, options.srcDir, 'pull');
+  const pushExpDir = path.join(fixtureDir, options.expDir, 'push');
+  const pullExpDir = path.join(fixtureDir, options.expDir, 'pull');
 
-  let defaultCounterparts = [
+  const defaultCounterparts = [
     {
       urlRoot: '/app',
       tagRoot: path.relative(__dirname, pushSrcDir),
@@ -84,7 +84,7 @@ let makeTests = function(title, options) {
     }
   ];
 
-  let defaultCrusherOptions = {
+  const defaultCrusherOptions = {
     cwd: __dirname,
     extractor: {
       urlBase: '/app/'
@@ -101,10 +101,10 @@ let makeTests = function(title, options) {
   };
       // append: 'momo'
 
-  let pushResults = {};
-  let pullResults = {};
+  const pushResults = {};
+  const pullResults = {};
 
-  let pushTapper = vinylTapper({
+  const pushTapper = vinylTapper({
     provideBuffer: true,
     terminate: true
   });
@@ -116,7 +116,7 @@ let makeTests = function(title, options) {
   
   );
 
-  let pullTapper = vinylTapper({
+  const pullTapper = vinylTapper({
     provideBuffer: true,
     terminate: true
   });

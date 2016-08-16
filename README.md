@@ -1,4 +1,9 @@
-# cache-crusher [![Build Status](https://secure.travis-ci.org/tapirdata/cache-crusher.png?branch=master)](https://travis-ci.org/tapirdata/cache-crusher) [![Dependency Status](https://david-dm.org/tapirdata/cache-crusher.svg)](https://david-dm.org/tapirdata/cache-crusher) [![devDependency Status](https://david-dm.org/tapirdata/cache-crusher/dev-status.svg)](https://david-dm.org/tapirdata/cache-crusher#info=devDependencies)
+# cache-crusher
+
+[![npm version](https://img.shields.io/npm/v/cache-crusher.svg?style=flat-square)](https://www.npmjs.com/package/cache-crusher)
+[![Build Status](https://secure.travis-ci.org/tapirdata/cache-crusher.png?branch=master)](https://travis-ci.org/tapirdata/cache-crusher)
+[![Dependency Status](https://david-dm.org/tapirdata/cache-crusher.svg)](https://david-dm.org/tapirdata/cache-crusher)
+[![devDependency Status](https://david-dm.org/tapirdata/cache-crusher/dev-status.svg)](https://david-dm.org/tapirdata/cache-crusher#info=devDependencies)
 
 > A cache-buster for [gulp](http://gulpjs.com), that integrates itself neatly into your tasks.
 
@@ -23,10 +28,10 @@ You may find the whole example project under `examples/simple`.
 The following `gulpfile.js` effectively just copies the `src`-tree into `dist` and runs an express-server that statically serves the contents of `dist/client` under the **url** `/static`.
 
 ```javascript
-gulp = require('gulp');
-cacheCrusher = require('cache-crusher');
+import gulp from 'gulp';
+import crusherFactory from 'cache-crusher';
 
-crusher = cacheCrusher({
+const crusher = crusherFactory({
   mapper: {
     counterparts: [{urlRoot: '/static', tagRoot: 'src/client'}]
   }
@@ -94,7 +99,7 @@ Optionally the **pusher** can be configured to not rename the resource file, but
 
 ## API
 
-#### var crusher = cacheCrusher(options);
+#### var crusher = crusherFactory(options);
 
 Creates a new crusher. Recognized options are:
 
@@ -217,7 +222,7 @@ All standard **extractor**s use `option.urlBase` as a required initial part of *
 Example:
 
 ```js
-crusher = cacheCrusher({
+const crusher = crusherFactory({
   extractor: {
     urlRoot: '/app/assets/'
   },

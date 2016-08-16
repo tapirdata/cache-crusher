@@ -1,8 +1,6 @@
 class Extractor {
 
-
-  constructor(options) {
-    options = options || {};
+  constructor(options = {}) {
     this.urlBase = options.urlBase || '';
     if (options.partBrick) {
       this.partBrick = options.partBrick;

@@ -11,9 +11,7 @@ import catalogFactory from './extractor-catalog';
 
 class Crusher {
 
-  constructor(options) {
-    options = options || {};
-
+  constructor(options = {}) {
     this.setDebug(options.debug);
     this.setEnabled(options.enabled);
     this.cwd = options.cwd || process.cwd();
@@ -24,14 +22,14 @@ class Crusher {
       this.getExtractor = options.getExtractor;
     }
 
-    let resolverOptions = _.merge({}, this.constructor.defaultResolverOptions, options.resolver);
+    const resolverOptions = _.merge({}, this.constructor.defaultResolverOptions, options.resolver);
     this.resolver = resolverOptions._ || resolverFactory(resolverOptions);
 
-    let mapperOptions = _.merge({}, this.constructor.defaultMapperOptions, options.mapper);
+    const mapperOptions = _.merge({}, this.constructor.defaultMapperOptions, options.mapper);
     this.mapper = mapperOptions._ || mapperFactory(mapperOptions);
     this.hasherOptions = _.merge({}, this.constructor.defaultHasherOptions, options.hasher);
 
-    let extractorOptions = _.merge({}, this.constructor.defaultExtractorOptions, options.extractor);
+    const extractorOptions = _.merge({}, this.constructor.defaultExtractorOptions, options.extractor);
     if (!extractorOptions.catalog) {
       extractorOptions.catalog = catalogFactory();
     }
@@ -59,19 +57,19 @@ class Crusher {
     if (options.relativeBase != null) {
       return file => path.join(options.relativeBase, file.relative);
     } else {
-      let base = (options.base != null) ? options.base : this.cwd;
+      const base = (options.base != null) ? options.base : this.cwd;
       return file => path.relative(base, file.path);
     }
   }
 
   getExtractor(file) {
-    let { catalog } = this.extractorOptions;
+    const { catalog } = this.extractorOptions;
     return catalog.getExtractor(file, this.extractorOptions);
   }
 
   pushOptioner(tagger, options, file) {
-    let tag = tagger(file);
-    let hit = this.mapper.getTagHit(tag);
+    const tag = tagger(file);
+    const hit = this.mapper.getTagHit(tag);
     this.debug("crusher.pushOptioner: tag='%s' hit=%s", tag, hit);
     if (hit == null) {
       return {};
@@ -80,36 +78,34 @@ class Crusher {
   }
 
   pullOptioner(options, file) {
-    let self = this;
-    let extractor = this.getExtractor(file);
+    const extractor = this.getExtractor(file);
     if (!extractor) {
       console.warn(`no extractor for file '${file.path}'`);
       return {pattern: null};
     }
     return {
       pattern: extractor.getPattern(),
-      substitute(match, originTag, done) {
-        self.debug("crusher.puller: originTag='%s' match='%s'", originTag, match[0]);
-        let parts = extractor.split(match);
-        let hit = self.mapper.getUrlHit(parts.path);
-        self.debug("crusher.puller (substitute): url='%s' hit=%s", parts.path, hit);
+      substitute: (match, originTag, done) => {
+        this.debug("crusher.puller: originTag='%s' match='%s'", originTag, match[0]);
+        const parts = extractor.split(match);
+        const hit = this.mapper.getUrlHit(parts.path);
+        this.debug("crusher.puller (substitute): url='%s' hit=%s", parts.path, hit);
         if (hit == null) {
           done();
-          return;
         }
-        return self.resolver.pull(hit.getTag(), originTag, function(err, result) {
+        return this.resolver.pull(hit.getTag(), originTag, (err, result) => {
           if (err) {
             done(err);
-            return;
           }
+          let replacement;
           if (result.tag != null) {
-            let newUrl = hit.getUrl(result.tag);
-            var replacement = parts.preamble + newUrl + parts.query + parts.postamble;
-            self.debug("crusher.puller (substitute): newUrl='%s'", newUrl);
+            const newUrl = hit.getUrl(result.tag);
+            replacement = parts.preamble + newUrl + parts.query + parts.postamble;
+            this.debug("crusher.puller (substitute): newUrl='%s'", newUrl);
           } else {
-            let hasherOptions = hit.getHasherOptions(self.hasherOptions);
+            const hasherOptions = hit.getHasherOptions(this.hasherOptions);
             if (hasherOptions != null) {
-              let { append } = hasherOptions;
+              const { append } = hasherOptions;
               if (append != null) {
                 let newQuery = parts.query;
                 if (newQuery) {
@@ -117,19 +113,20 @@ class Crusher {
                 } else {
                   newQuery += '?';
                 }
+                let rev;
                 if (_.isFunction(append)) {
-                  var rev = append(result.digest);
+                  rev = append(result.digest);
                 } else if (_.isString(append)) {
-                  var rev = append + '=' + result.digest;
+                  rev = append + '=' + result.digest;
                 } else {
-                  var rev = result.digest;
+                  rev = result.digest;
                 }
                 newQuery += rev;
-                var replacement = parts.preamble + parts.path + newQuery + parts.postamble;
+                replacement = parts.preamble + parts.path + newQuery + parts.postamble;
               }
             }
           }
-          self.debug("crusher.puller (substitute): replacement='%s'", replacement);
+          this.debug("crusher.puller (substitute): replacement='%s'", replacement);
           done(null, replacement);
         }
         );
@@ -142,9 +139,8 @@ class Crusher {
       return new stream.PassThrough({objectMode: true});
     }
     options = options || {};
-    let { resolver } = this;
-    let tagger = this.getTagger(options.tagger);
-    let { debug } = this;
+    const { resolver, debug } = this;
+    const tagger = this.getTagger(options.tagger);
     return streamHasher({
       tagger,
       optioner: this.pushOptioner.bind(this, tagger, options)
@@ -179,7 +175,6 @@ Object.assign(Crusher, {
 });
 
 let factory = options => new Crusher(options);
-
 factory.Crusher = Crusher;
 
 export default factory;

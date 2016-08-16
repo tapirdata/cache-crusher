@@ -1,11 +1,14 @@
+
+
 class TimeoutError extends Error {
   constructor(tag, originTag, timeout) {
     super()
     this.tag = tag;
     this.originTag = originTag;
     this.timeout = timeout;
+    let originText;
     if (this.originTag) {
-      var originText = `(by ${this.originTag}) `;
+      originText = `(by ${this.originTag}) `;
     }
     this.message = `Timeout for tag '${this.tag} ${originText}after ${this.timeout}ms`;
   }
@@ -13,8 +16,7 @@ class TimeoutError extends Error {
 
 
 class Resolver {
-  constructor(options) {
-    options = options || {};
+  constructor(options = {}) {
     this.map = {};
     this.timeout = options.timeout;
   }
@@ -39,7 +41,7 @@ class Resolver {
     entry.err = err;
     entry.data = data;
     while (entry.queue.length > 0) {
-      let done = entry.queue.shift();
+      const done = entry.queue.shift();
       done(entry.err, entry.data);
     }
     entry.resolved = true;
@@ -80,7 +82,6 @@ class Resolver {
 }
 
 let factory = options => new Resolver(options);
-
 factory.Resolver = Resolver;
 factory.TimeoutError = TimeoutError;
 

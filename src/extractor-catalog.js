@@ -7,22 +7,22 @@ class ExtractorCatalog {
   constructor(options = {}) {
     this._classes = {};
     this._handles = {};
-    let { scan } = options;
+    const { scan } = options;
     if (scan !== false) {
+      let scanDir;
       if (_.isString(scan)) {
-        var scanDir = scan;
+        scanDir = scan;
       } else {
-        var scanDir = path.join(__dirname, './extractors');
+        scanDir = path.join(__dirname, './extractors');
       }
       this.scanExtractors(scanDir, options);
     }
   }
 
   scanExtractors(scanDir, options) {
-    let fileNames = fs.readdirSync(scanDir);
-    for (let i = 0; i < fileNames.length; i++) {
-      let fileName = fileNames[i];
-      let extractorPath = path.join(scanDir, fileName);
+    const fileNames = fs.readdirSync(scanDir);
+    for (const fileName of fileNames) {
+      const extractorPath = path.join(scanDir, fileName);
       try {
         var Extractor = require(extractorPath).default;
       } catch (err) {
@@ -62,9 +62,9 @@ class ExtractorCatalog {
   }
 
   getExtractor(file, options) {
-    let ext = path.extname(file.path);
-    let handle = this.getHandle(ext);
-    let Extractor = this.getClass(handle);
+    const ext = path.extname(file.path);
+    const handle = this.getHandle(ext);
+    const Extractor = this.getClass(handle);
     if (Extractor != null) {
       return new Extractor(options);
     }
@@ -72,7 +72,7 @@ class ExtractorCatalog {
 }
 
 
-let factory = options => new ExtractorCatalog(options);
+const factory = options => new ExtractorCatalog(options);
 factory.ExtractorCatalog = ExtractorCatalog;
 
 export default factory;

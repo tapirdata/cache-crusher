@@ -35,9 +35,8 @@ class Entry {
       if (!_.isArray(globs)) {
         globs = [globs];
       }
-      for (let i = 0; i < globs.length; i++) {
-        let glob = globs[i];
-        let mm = new minimatch.Minimatch(glob, this.globOptions);
+      for (const glob of globs) {
+        const mm = new minimatch.Minimatch(glob, this.globOptions);
         mms.push(mm);
       }
       if (mms.length === 0) {
@@ -48,13 +47,12 @@ class Entry {
   }
 
   checkGlob(rel) {
-    let mms = this._mms;
+    const mms = this._mms;
     if (mms == null) {
       return true;
     }
     let ok = null;
-    for (let i = 0; i < mms.length; i++) {
-      let mm = mms[i];
+    for (const mm of mms) {
       if (ok === null || ok === mm.negate) {
         ok = mm.match(rel);
       }
@@ -89,7 +87,13 @@ class Entry {
   }
 
   toString() {
-    return util.format("Entry({urlRoot='%s', tagRoot='%s', globs=%s, crushOptions=%j})", this.urlRoot, this.tagRoot, this.globs, this.crushOptions);
+    return util.format(
+        "Entry({urlRoot='%s', tagRoot='%s', globs=%s, crushOptions=%j})",
+        this.urlRoot,
+        this.tagRoot,
+        this.globs,
+        this.crushOptions
+    );
   }
 }
 
@@ -158,8 +162,7 @@ class Mapper {
 }
 
 
-let factory = options => new Mapper(options);
-
+const factory = options => new Mapper(options);
 factory.Mapper = Mapper;
 
 export default factory;
