@@ -29,17 +29,17 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "coffee-script": "^1.10.0",
-    "mocha": "^2.5.3",
+    "mocha": "^3.0.2",
     "vinyl-fs": "^2.4.3",
-    "vinyl-tapper": "^0.3.1",
+    "vinyl-tapper": "^1.0.0",
     "walk": "^2.3.9"
   },
   "dependencies": {
-    "lodash": "^4.13.1",
-    "minimatch": "^3.0.2",
+    "lodash": "^4.15.0",
+    "minimatch": "^3.0.3",
     "readable-stream": "^2.1.4",
-    "stream-hasher": "^0.5.1",
-    "stream-replacer": "^0.5.1"
+    "stream-hasher": "^1.0.1",
+    "stream-replacer": "^1.0.0"
   },
   "license": "MIT"
 }

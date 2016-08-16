@@ -3,8 +3,8 @@
 path = require 'path'
 _ = require 'lodash'
 stream = require 'readable-stream'
-streamHasher = require 'stream-hasher'
-streamReplacer = require 'stream-replacer'
+streamHasher = require('stream-hasher').default
+streamReplacer = require('stream-replacer').default
 
 
 class Crusher
