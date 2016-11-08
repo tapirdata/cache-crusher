@@ -21,25 +21,22 @@ function readTree(srcRoot, srcBase, done) {
       }
       results[path.relative(srcBase, srcPath)] = srcBuffer;
       next();
-    }
-    );
-  }
-  );
+    });
+  });
 
-  return walker.on('end', () => done(null, results)
-  );
+  walker.on('end', () => done(null, results));
 };
 
 
 function compareResultsExps(results, exps) {
   const misses = [];
   const extras = [];
-  for (var p in exps) {
+  for (let p in exps) {
     if (results[p] == null) {
       misses.push(p);
     }
   }
-  for (p in results) {
+  for (let p in results) {
     if (!exps[p]) {
       extras.push(p);
     }
@@ -53,10 +50,9 @@ function compareResultsExps(results, exps) {
       parts.push((_.map(extras, s => `'${s}'`)).join(', ') + ' superfluous');
     }
     return `Paths differ: ${parts.join('; ')}`;
-  }
-  );
+  });
 
-  for (p in results) {
+  for (let p in results) {
     const result = results[p];
     const expBuffer = exps[p];
     expect(result.buffer.toString('utf8')).to.be.equal(expBuffer.toString('utf8'));
@@ -77,10 +73,8 @@ function makeTests(title, options) {
     {
       urlRoot: '/app',
       tagRoot: path.relative(__dirname, pushSrcDir),
-      // globs: ['**/*.css', '**/*.js']
       globs: ['*.css', '*.js'],
-      globOptions: { matchBase: true
-    }
+      globOptions: { matchBase: true }
     }
   ];
 
@@ -99,7 +93,6 @@ function makeTests(title, options) {
       rename: 'postfix'
     }
   };
-      // append: 'momo'
 
   const pushResults = {};
   const pullResults = {};
@@ -108,13 +101,12 @@ function makeTests(title, options) {
     provideBuffer: true,
     terminate: true
   });
-  pushTapper.on('tap', (file, buffer) =>
+  pushTapper.on('tap', (file, buffer) => {
     pushResults[file.relative] = {
       file,
       buffer
     }
-  
-  );
+  });
 
   const pullTapper = vinylTapper({
     provideBuffer: true,
@@ -130,7 +122,8 @@ function makeTests(title, options) {
 
   let pushExps = null;
   let pullExps = null;
-  let readExps = cb =>
+
+  function readExps(cb) {
     readTree(pushExpDir, pushExpDir, function(err, results) {
       pushExps = results;
       if (err) {
@@ -144,11 +137,9 @@ function makeTests(title, options) {
           return;
         }
         return cb();
-      }
-      );
-    }
-    )
-  ;
+      });
+    })
+  }
 
   let pushOptions = options.push || {};
   let pullOptions = options.pull || {};
@@ -181,8 +172,7 @@ function makeTests(title, options) {
           let pushWell = vinylFs.src('**/*.*', {
             cwd: pushSrcDir,
             buffer: pushOptions.useBuffer
-          }
-          );
+          });
           return pushWell
             .pipe(crusher.pusher())
             .pipe(pushTapper)
@@ -193,8 +183,7 @@ function makeTests(title, options) {
           let pullWell = vinylFs.src('**/*.*', {
             cwd: pullSrcDir,
             buffer: pullOptions.useBuffer
-          }
-          );
+          });
           return pullWell
             .pipe(crusher.puller())
             .pipe(pullTapper)
@@ -212,8 +201,7 @@ function makeTests(title, options) {
 
     return it('should write the expected pull files', () => compareResultsExps(pullResults, pullExps)
     );
-  }
-  );
+  });
 };
 
 
@@ -222,8 +210,7 @@ describe('cache-crusher', function() {
   makeTests('Simple postfix', {
     srcDir: 'simple-src',
     expDir: 'simple-exp-postfix'
-  }
-  );
+  });
 
   makeTests('Simple postfix with pull buffer', {
     srcDir: 'simple-src',
@@ -231,8 +218,7 @@ describe('cache-crusher', function() {
     pull: {
       useBuffer: true
     }
-  }
-  );
+  });
 
   makeTests('Simple postfix with push buffer', {
     srcDir: 'simple-src',
@@ -240,8 +226,7 @@ describe('cache-crusher', function() {
     push: {
       useBuffer: true
     }
-  }
-  );
+  });
 
   makeTests('Simple postfix with push delay', {
     srcDir: 'simple-src',
@@ -249,8 +234,7 @@ describe('cache-crusher', function() {
     push: {
       delay: 500
     }
-  }
-  );
+  });
 
   makeTests('Simple postfix with pull delay', {
     srcDir: 'simple-src',
@@ -258,10 +242,9 @@ describe('cache-crusher', function() {
     pull: {
       delay: 500
     }
-  }
-  );
+  });
 
-  return makeTests('Simple append', {
+  makeTests('Simple append', {
     srcDir: 'simple-src',
     expDir: 'simple-exp-append',
     crusher: {
@@ -270,10 +253,8 @@ describe('cache-crusher', function() {
         append: 'rev'
       }
     }
-  }
-  );
-}
-);
+  });
+});
 
 
 

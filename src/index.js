@@ -92,10 +92,12 @@ class Crusher {
         this.debug("crusher.puller (substitute): url='%s' hit=%s", parts.path, hit);
         if (hit == null) {
           done();
+          return;
         }
         return this.resolver.pull(hit.getTag(), originTag, (err, result) => {
           if (err) {
             done(err);
+            return;
           }
           let replacement;
           if (result.tag != null) {
@@ -128,8 +130,7 @@ class Crusher {
           }
           this.debug("crusher.puller (substitute): replacement='%s'", replacement);
           done(null, replacement);
-        }
-        );
+        });
       }
     };
   }
@@ -148,8 +149,7 @@ class Crusher {
     .on('digest', function(digest, oldTag, newTag) {
       debug("cusher.pusher: tag='%s'", oldTag);
       return resolver.push(oldTag, null, {digest, tag: newTag});
-    }
-    );
+    });
   }
 
   puller(options) {
@@ -174,7 +174,10 @@ Object.assign(Crusher, {
   },
 });
 
-let factory = options => new Crusher(options);
+function factory(options) {
+  return new Crusher(options); 
+}
+
 factory.Crusher = Crusher;
 
 export default factory;
