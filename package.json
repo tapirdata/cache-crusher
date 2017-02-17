@@ -1,6 +1,6 @@
 {
   "name": "cache-crusher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A configurable cache buster for gulp",
   "main": "./lib",
   "scripts": {
