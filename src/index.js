@@ -161,6 +161,59 @@ class Crusher {
       optioner: this.pullOptioner.bind(this, options)
     });
   }
+
+  pullString(source, fileinfo, _options={}) {
+    if (this.enabled) {
+      let options = this.pullOptioner(_options, fileinfo);
+      if (options.pattern != null) {
+        let tagger = this.getTagger();
+        let tag = tagger(fileinfo);
+        let rest = source;
+        let matches = [];
+        let strs = [];
+        /*eslint-disable no-constant-condition*/
+        while (true) {
+          let match = options.pattern.exec(rest);
+          if (match == null) {
+            break;
+          }
+          let matchLength = match[0].length;
+          strs.push(rest.slice(0, match.index));
+          matches.push(match);
+          rest = rest.slice(match.index + matchLength);
+        }
+        if (matches.length >  0) {
+          let promises = [];
+          for (let match of matches) {
+            promises.push(new Promise(function(resolve, reject) {
+              options.substitute(match, tag, (err, replacement) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(replacement);
+                }
+              });
+            }));
+          }
+          return Promise.all(promises)
+          .then(replacements => {
+            let result = '';
+            for (let idx=0; idx<matches.length; ++idx) {
+              result += strs[idx];
+              let replacement = replacements[idx];
+              if (replacement == null) {
+                replacement = matches[idx][0];
+              }
+              result += replacement;
+            }
+            result += rest;
+            return result;
+          });
+        }
+      }
+    }
+    return Promise.resolve(source);
+  }
 }
 
 

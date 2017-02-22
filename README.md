@@ -73,7 +73,7 @@ The only thing we must configure (but there is much more we *may*) is some mappi
 ---
 
 A more complete development-setup that uses `cache-crusher` may be be created by this [yeoman](http://yeoman.io) generator:
-[browserify-versatile](https://www.npmjs.com/package/generator-browserify-versatile).
+[webpack-versatile](https://www.npmjs.com/package/generator-webpack-versatile).
 
 ## Architecture
 
@@ -192,12 +192,18 @@ This is the default **extractor** factory. It uses an **extractorCatalog**, spec
 
 #### crusher.puller()
 
-GCreate a new pull-stream (to pass referer files through).
+Create a new pull-stream (to pass referer files through).
 
 #### crusher.pusher(options)
 
 Create a new push-stream (to pass resource files through).
-`options.tagger` are used to create the **tagger**.
+`options.tagger` is used to create the **tagger**.
+
+#### crusher.pullString(source, fileinfo, options)
+
+An alternative non-stream interface to to crusher's puller-side. **fileinfo** will be used as argument to **getExtractor**. That extractor will be applied to **source**.
+Returns a **Promise** for the transformed **source**-string. 
+
 
 ## The default *extractorCatalog*
 
@@ -216,7 +222,7 @@ class              | handle   | extensions               | comments
 |------------------|----------|--------------------------|---------
 |`Extractor`       | 'base'   |                          | looks for strings (enclosed in single or double quotes)
 |`ScriptExtractor` | 'script' | '.js', '.coffee'         | looks for strings in escaped quotes (as seen in compiled templates), too. 
-|`HtmlExtractor`   | 'html'   | '.html', '.xml', '.jade' | looks for strings preceeded with 'src=' or 'href='
+|`HtmlExtractor`   | 'html'   | '.html', '.xml', '.jade' | looks for strings preceded with 'src=' or 'href='
 
 All standard **extractor**s use `option.urlBase` as a required initial part of **urls** to be extracted.
 Example:
@@ -232,7 +238,7 @@ const crusher = crusherFactory({
 });
 ```
 Notes:
-- There has to be some corespondence between `extractor.urlRoot` and some `counterpart.urlRoot` to effectively extract anything at all.
+- There has to be some correspondence between `extractor.urlRoot` and some `counterpart.urlRoot` to effectively extract anything at all.
 - You may omit the closing '/' for `counterpart.urlRoot` and `counterparts.tagRoot`. It is appended automatically. 
-- You may just set `urlRoot: ''` for the cost of some performance pealty: A a lot of none-**url** strings will be passed to **mapper** (and rejected here) instead of just passing them through by avoiding a `RegExp`-match.   
+- You may just set `urlRoot: ''` for the cost of some performance penalty: A lot of none-**url** strings will be passed to **mapper** (and rejected here) instead of just passing them through by avoiding a `RegExp`-match.   
  

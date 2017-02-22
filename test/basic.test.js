@@ -6,6 +6,7 @@ import vinylTapper from 'vinyl-tapper';
 import { expect, assert } from 'chai';
 import cacheCrusher from '../src/index';
 import walk from 'walk';
+import stream from 'readable-stream';
 
 
 function readTree(srcRoot, srcBase, done) {
@@ -58,6 +59,30 @@ function compareResultsExps(results, exps) {
     expect(result.buffer.toString('utf8')).to.be.equal(expBuffer.toString('utf8'));
   }  
 };
+
+
+class PullStringReplacer extends stream.Transform {
+
+  constructor(crusher, options) {
+    super({objectMode: true});
+    this.crusher = crusher;
+    options = options || {};
+  }
+
+  _transform(file, enc, next) {
+    assert(file.isBuffer());
+    let text = String(file.contents, enc);
+    this.crusher.pullString(text, file)
+      .then( text => {
+        file.contents = new Buffer(text, enc);
+        next(null, file);
+      })
+      .catch(err => {
+        next(err);
+      });
+  }
+
+}  
 
 
 const fixtureDir = path.join(__dirname, 'fixtures');
@@ -144,7 +169,7 @@ function makeTests(title, options) {
   let pushOptions = options.push || {};
   let pullOptions = options.pull || {};
 
-  return describe(title, function() {
+  describe(title, function() {
 
     let crusher = null;
 
@@ -173,34 +198,34 @@ function makeTests(title, options) {
             cwd: pushSrcDir,
             buffer: pushOptions.useBuffer
           });
+          pushWell = pushWell.pipe(crusher.pusher());
           return pushWell
-            .pipe(crusher.pusher())
             .pipe(pushTapper)
             .on('end', streamDone);
         };
+        setTimeout(runPush, pushOptions.delay);
 
         let runPull = function() {
           let pullWell = vinylFs.src('**/*.*', {
             cwd: pullSrcDir,
             buffer: pullOptions.useBuffer
           });
+          if (pullOptions.asString) {
+            pullWell = pullWell.pipe(new PullStringReplacer(crusher))
+          } else {
+            pullWell = pullWell.pipe(crusher.puller());
+          }  
           return pullWell
-            .pipe(crusher.puller())
             .pipe(pullTapper)
             .on('end', streamDone);
         };
+        setTimeout(runPull, pullOptions.delay);
 
-        setTimeout(runPush, pushOptions.delay);
-        return setTimeout(runPull, pullOptions.delay);
       })
     );
 
-
-    it('should write the expected push files', () => compareResultsExps(pushResults, pushExps)
-    );
-
-    return it('should write the expected pull files', () => compareResultsExps(pullResults, pullExps)
-    );
+    it('should write the expected push files', () => compareResultsExps(pushResults, pushExps));
+    it('should write the expected pull files', () => compareResultsExps(pullResults, pullExps));
   });
 };
 
@@ -254,6 +279,15 @@ describe('cache-crusher', function() {
       }
     }
   });
+
+  makeTests('Simple postfix with pullString', {
+    srcDir: 'simple-src',
+    expDir: 'simple-exp-postfix',
+    pull: {
+      asString: true
+    }
+  });
+
 });
 
 
