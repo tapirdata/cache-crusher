@@ -42,7 +42,7 @@
     "@types/glob": "^5.0.30",
     "@types/mocha": "^2.2.41",
     "@types/vinyl-fs": "^2.4.5",
-    "chai": "^3.5.0",
+    "chai": "^4.0.2",
     "glob": "^7.1.2",
     "mocha": "^3.2.0",
     "ts-node": "^3.0.6",
