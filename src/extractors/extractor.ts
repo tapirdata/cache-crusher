@@ -15,18 +15,31 @@ class Extractor {
     this.urlBase = options.urlBase || ""
     if (options.partBrick) {
       this.partBrick = options.partBrick
+    } else {
+      this.partBrick = this.defaultPartBrick
     }
     this.pathBrick = `${this.urlBase}(?:${this.partBrick}/)*${this.partBrick}`
   }
 
+  public get preambleBrickNum() { return 2 }
+  public get pathBrickNum() { return 1 }
+  public get queryBrickNum() { return 1 }
+
+  public get defaultPartBrick() { return '[^\/#?\'"]+' }
+  public get preBrick() { return "" }
+  public get postBrick() { return "" }
+  public get openBrick() { return '[\'"]' }
+  public get closeBrick() { return "\\2" }
+  public get queryBrick() { return '(?:\\?[^#"\']*)?' }
+
   public getBrick() {
     const brickParts = [
-      "(", (this as any).preBrick, ")",
-      "(", (this as any).openBrick, ")",
-      "(", (this as any).pathBrick, ")",
-      "(", (this as any).queryBrick, ")",
-      "(", (this as any).closeBrick, ")",
-      "(", (this as any).postBrick, ")",
+      "(", this.preBrick, ")",
+      "(", this.openBrick, ")",
+      "(", this.pathBrick, ")",
+      "(", this.queryBrick, ")",
+      "(", this.closeBrick, ")",
+      "(", this.postBrick, ")",
     ]
     return brickParts.join("")
   }
@@ -58,18 +71,4 @@ class Extractor {
 
 }
 
-Object.assign(Extractor.prototype, {
-  preambleBrickNum: 2,
-  pathBrickNum: 1,
-  queryBrickNum: 1,
-
-  partBrick: '[^\/#?\'"]+',
-  preBrick: "",
-  postBrick: "",
-  openBrick: '[\'"]',
-  closeBrick: "\\2",
-  queryBrick: '(?:\\?[^#"\']*)?',
-})
-
 export default Extractor
-export { ExtractorOptions }

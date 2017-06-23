@@ -27,7 +27,11 @@ export class ExtractorCatalog {
 
   public scanExtractors(scanDir: string, options: CatalogOptions) {
     const fileNames = fs.readdirSync(scanDir)
+    // glob.sync(scanDir + '/**/*extractor.+(ts|js)')
     for (const fileName of fileNames) {
+      if (!/extractor\.(ts|js)$/.test(fileName)) {
+        continue
+      }
       const extractorPath = path.join(scanDir, fileName)
       let ExtractorCls
       try {

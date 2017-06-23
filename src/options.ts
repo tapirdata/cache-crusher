@@ -1,10 +1,12 @@
 import File = require("vinyl")
 import { HasherOptions } from "stream-hasher"
 import { ReplacerOptions } from "stream-replacer"
+
 import { ExtractorCatalog } from "./extractor-catalog"
+import { Mapper } from "./mapper"
+import { Resolver } from "./resolver"
 
 export type Cb = (err?: any, val?: any) => void
-
 export type Tagger = (file: File) => string
 export type TaggerGetter = (options?: any) => Tagger
 
@@ -38,6 +40,7 @@ export interface PullOptions {
 }
 
 export interface ResolverOptions {
+  _?: Resolver
   timeout?: number
 }
 
@@ -50,6 +53,7 @@ export interface EntryOptions {
 }
 
 export interface MapperOptions {
+  _?: Mapper
   counterparts?: any[]
 }
 

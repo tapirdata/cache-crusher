@@ -25,10 +25,18 @@ import { Resolver } from "./resolver"
 
 export class Crusher {
 
+  public get defaultResolverOptions() { return { timeout: 10000 } }
+  public get defaultMapperOptions() { return {} }
+  public get defaultExtractorOptions() { return { urlBase: "/static/" } }
+  public get defaultHasherOptions() { return {
+    rename: "postfix",
+    digestLength: 8,
+  } }
+
   protected debug: (...args: any[]) => void
   protected enabled?: boolean
   protected cwd: string
-  protected resolverOptions: ResolverOptions
+  // protected resolverOptions: ResolverOptions
   protected hasherOptions: HasherOptions
   protected resolver: Resolver
   protected mapper: Mapper
@@ -45,14 +53,14 @@ export class Crusher {
       (this as any).getExtractor = options.getExtractor
     }
 
-    const resolverOptions = _.merge({}, (this.constructor as any).defaultResolverOptions, options.resolver)
+    const resolverOptions: ResolverOptions = _.merge({}, this.defaultResolverOptions, options.resolver)
     this.resolver = resolverOptions._ || resolverFactory(resolverOptions)
 
-    const mapperOptions = _.merge({}, (this.constructor as any).defaultMapperOptions, options.mapper)
+    const mapperOptions: MapperOptions = _.merge({}, this.defaultMapperOptions, options.mapper)
     this.mapper = mapperOptions._ || mapperFactory(mapperOptions)
-    this.hasherOptions = _.merge({}, (this.constructor as any).defaultHasherOptions, options.hasher)
+    this.hasherOptions = _.merge({}, this.defaultHasherOptions, options.hasher)
 
-    const extractorOptions = _.merge({}, (this.constructor as any).defaultExtractorOptions, options.extractor)
+    const extractorOptions: ExtractorOptions = _.merge({}, this.defaultExtractorOptions, options.extractor)
     if (!extractorOptions.catalog) {
       extractorOptions.catalog = catalogFactory({})
     }
@@ -240,16 +248,6 @@ export class Crusher {
 
 }
 
-Object.assign(Crusher, {
-  defaultResolverOptions: {timeout: 10000},
-  defaultMapperOptions: {},
-  defaultExtractorOptions: {urlBase: "/static/"},
-  defaultHasherOptions: {
-    rename: "postfix",
-    digestLength: 8,
-  },
-})
-
 export interface Factory {
   (options: CrusherOptions): Crusher
   Crusher: typeof Crusher
@@ -262,3 +260,4 @@ const factory = ((options: CrusherOptions) => {
 factory.Crusher = Crusher
 
 export default factory
+export { Extractor }

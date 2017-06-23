@@ -1,17 +1,17 @@
+import { ExtractorOptions } from "../options"
 import Extractor from "./extractor"
-import { ExtractorOptions } from "./extractor"
 
 export class HtmlExtractor extends Extractor {
+
+  public static handle = "html"
+  public static exts = [".html", ".xml", ".jade"]
 
   constructor(options: ExtractorOptions) {
     super(options)
   }
 
+  public get preBrick() { return "(?:src|href)\\s*=\\s*" }
+
 }
-
-(HtmlExtractor as any).handle = "html";
-(HtmlExtractor as any).exts = [".html", ".xml", ".jade"];
-
-(HtmlExtractor.prototype as any).preBrick = "(?:src|href)\\s*=\\s*"
 
 export default HtmlExtractor
