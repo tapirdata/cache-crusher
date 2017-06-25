@@ -4,7 +4,7 @@ import Extractor from "./extractor"
 export class HtmlExtractor extends Extractor {
 
   public static handle = "html"
-  public static exts = [".html", ".xml", ".jade"]
+  public static exts = [".html", ".xml", ".jade", ".pug"]
 
   constructor(options: ExtractorOptions) {
     super(options)
