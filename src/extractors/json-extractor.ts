@@ -1,5 +1,5 @@
+import { Extractor } from "../extractor"
 import { ExtractorOptions } from "../options"
-import Extractor from "./extractor"
 
 export class JsonExtractor extends Extractor {
 
@@ -13,6 +13,3 @@ export class JsonExtractor extends Extractor {
 }
 
 export default JsonExtractor
-
-
-

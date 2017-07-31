@@ -1,7 +1,6 @@
-import { ExtractorCatalog } from "../extractor-catalog"
-import { ExtractorOptions } from "../options"
+import { ExtractorOptions } from "./options"
 
-class Extractor {
+export class Extractor {
 
   public static handle: string = "base"
   public static exts: string[] = []
@@ -70,5 +69,3 @@ class Extractor {
   }
 
 }
-
-export default Extractor

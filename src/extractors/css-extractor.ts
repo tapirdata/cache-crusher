@@ -1,5 +1,5 @@
+import { Extractor } from "../extractor"
 import { ExtractorOptions } from "../options"
-import Extractor from "./extractor"
 
 export class CssExtractor extends Extractor {
 
@@ -10,9 +10,7 @@ export class CssExtractor extends Extractor {
     super(options)
   }
 
-  public get preBrick() { return '(?:url)\\s*\\(\\s*' }
+  public get preBrick() { return "(?:url)\\s*\\(\\s*" }
 }
 
 export default CssExtractor
-
-

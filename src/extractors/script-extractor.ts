@@ -1,10 +1,10 @@
+import { Extractor } from "../extractor"
 import { ExtractorOptions } from "../options"
-import Extractor from "./extractor"
 
 export class ScriptExtractor extends Extractor {
 
   public static handle = "script"
-  public static exts = [".js", ".coffee"]
+  public static exts = [".js", ".jsx", ".ts", ".tsx", ".coffee"]
 
   constructor(options: ExtractorOptions) {
     super(options)

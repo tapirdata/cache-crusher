@@ -2,7 +2,7 @@ import File = require("vinyl")
 import { HasherOptions } from "stream-hasher"
 import { ReplacerOptions } from "stream-replacer"
 
-import { ExtractorCatalog } from "./extractor-catalog"
+import { Extractor } from "./extractor"
 import { Mapper } from "./mapper"
 import { Resolver } from "./resolver"
 
@@ -55,6 +55,12 @@ export interface EntryOptions {
 export interface MapperOptions {
   _?: Mapper
   counterparts?: any[]
+}
+
+export interface ExtractorCatalog {
+  registerClass(ExtractorCls: typeof Extractor, options: any): void
+  registerExts(handle: string, exts: string[] | string): void
+  getExtractor(file: File, options: any): Extractor | undefined
 }
 
 export interface ExtractorOptions {

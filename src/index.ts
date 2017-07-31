@@ -6,13 +6,14 @@ import streamHasher from "stream-hasher"
 import { HasherOptions } from "stream-hasher"
 import streamReplacer from "stream-replacer"
 
-import catalogFactory from "./extractor-catalog"
-import Extractor from "./extractors/extractor"
+import defaultCatalogFactory from "./default-catalog"
+import { Extractor } from "./extractor"
 import mapperFactory from "./mapper"
 import { Mapper } from "./mapper"
 import {
   Cb,
   CrusherOptions,
+  ExtractorCatalog,
   ExtractorOptions,
   MapperOptions,
   PullOptions,
@@ -32,6 +33,8 @@ export class Crusher {
     rename: "postfix",
     digestLength: 8,
   } }
+
+  public extractorCatalog: ExtractorCatalog
 
   protected debug: (...args: any[]) => void
   protected enabled?: boolean
@@ -61,10 +64,8 @@ export class Crusher {
     this.hasherOptions = _.merge({}, this.defaultHasherOptions, options.hasher)
 
     const extractorOptions: ExtractorOptions = _.merge({}, this.defaultExtractorOptions, options.extractor)
-    if (!extractorOptions.catalog) {
-      extractorOptions.catalog = catalogFactory({})
-    }
     this.extractorOptions = extractorOptions
+    this.extractorCatalog = extractorOptions.catalog || defaultCatalogFactory({})
   }
 
   public setEnabled(enabled?: boolean) {
@@ -93,7 +94,7 @@ export class Crusher {
   }
 
   public getExtractor(file: File): Extractor | undefined {
-    const { catalog } = this.extractorOptions
+    const catalog = this.extractorCatalog
     if (catalog) {
       return catalog.getExtractor(file, this.extractorOptions)
     }

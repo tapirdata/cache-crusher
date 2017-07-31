@@ -1,5 +1,5 @@
+import { Extractor } from "../extractor"
 import { ExtractorOptions } from "../options"
-import Extractor from "./extractor"
 
 export class HtmlExtractor extends Extractor {
 

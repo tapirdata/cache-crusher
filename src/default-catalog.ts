@@ -2,7 +2,7 @@ import fs = require("fs")
 import path = require("path")
 import File = require("vinyl")
 import _ = require("lodash")
-import Extractor from "./extractors/extractor"
+import { Extractor } from "./extractor"
 import { CatalogOptions, ExtractorOptions } from "./options"
 
 export class ExtractorCatalog {
