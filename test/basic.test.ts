@@ -1,15 +1,16 @@
+import { assert, expect } from "chai"
 import fs = require("fs")
-import path = require("path")
+import glob = require ("glob")
 import _ = require("lodash")
+import path = require("path")
 import stream = require("stream")
 import File = require("vinyl")
 import vinylFs = require("vinyl-fs")
-import { assert, expect } from "chai"
 import vinylTapper from "vinyl-tapper"
+
 import crusherFactory from "../src/index"
 import { Crusher } from "../src/index"
 import { Cb } from "../src/options"
-import glob = require ("glob")
 
 interface BufferMap { [p: string]: Buffer }
 interface BufferFileMap { [p: string]: { buffer: Buffer, file: File} }
@@ -19,7 +20,7 @@ function readTree(srcRoot: string, srcBase: string, done: Cb) {
     if (err) {
       done(err)
     } else {
-      const promises = srcPaths.map((srcPath: string) => new Promise((resolve, reject) => {
+      const promises: Array<Promise<Buffer>> = srcPaths.map((srcPath: string) => new Promise((resolve, reject) => {
         return fs.readFile(srcPath, (readErr: any, srcBuffer: Buffer) => {
           if (readErr) {
             reject(err)
@@ -85,7 +86,7 @@ class PullStringReplacer extends stream.Transform {
     const text = String(file.contents)
     this.crusher.pullString(text, file)
       .then((pulledText) => {
-        file.contents = new Buffer(pulledText, enc)
+        file.contents = Buffer.from(pulledText, enc)
         next(null, file)
       })
       .catch((err) => {

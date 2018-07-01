@@ -1,10 +1,10 @@
+import _ = require("lodash")
 import path = require("path")
 import stream = require ("stream")
-import File = require("vinyl")
-import _ = require("lodash")
 import streamHasher from "stream-hasher"
 import { HasherOptions } from "stream-hasher"
 import streamReplacer from "stream-replacer"
+import File = require("vinyl")
 
 import defaultCatalogFactory from "./default-catalog"
 import { Extractor } from "./extractor"
@@ -36,7 +36,7 @@ export class Crusher {
 
   public extractorCatalog: ExtractorCatalog
 
-  protected debug: (...args: any[]) => void
+  protected debug!: (...args: any[]) => void
   protected enabled?: boolean
   protected cwd: string
   // protected resolverOptions: ResolverOptions

@@ -8,7 +8,7 @@ export class Extractor {
   protected urlBase: string
   protected partBrick: string
   protected pathBrick: string
-  private pattern: RegExp
+  private pattern?: RegExp
 
   constructor(options: ExtractorOptions) {
     this.urlBase = options.urlBase || ""

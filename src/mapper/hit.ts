@@ -1,5 +1,6 @@
-import util = require("util")
 import _ = require("lodash")
+import util = require("util")
+
 import { Entry } from "./entry"
 
 export class Hit {

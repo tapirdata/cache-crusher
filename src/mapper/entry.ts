@@ -1,7 +1,8 @@
-import util = require("util")
-import path = require("path")
 import _ = require("lodash")
 import minimatch = require("minimatch")
+import path = require("path")
+import util = require("util")
+
 import { EntryOptions } from "../options"
 
 function ensureEndSlash(p: string) {
