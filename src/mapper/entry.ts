@@ -14,6 +14,7 @@ function ensureEndSlash(p: string) {
 }
 
 const escapeRegExp = (s: string) => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")
+  .replace(/(\\\\|\\\/)/g, "[\\\\|\/]")
 
 export class Entry {
 
@@ -76,6 +77,7 @@ export class Entry {
 
   public getUrl(rel: string) {
     return path.join(this.urlRoot, rel)
+      .replace(/\\/g, "/")
   }
 
   public toString() {
