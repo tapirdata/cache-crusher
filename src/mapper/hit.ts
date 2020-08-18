@@ -1,5 +1,5 @@
-import _ = require("lodash")
-import util = require("util")
+import * as _ from "lodash"
+import * as util from "util"
 
 import { Entry } from "./entry"
 

@@ -1,10 +1,10 @@
-import _ = require("lodash")
-import path = require("path")
-import stream = require ("stream")
+import * as _ from "lodash"
+import * as path from "path"
+import { PassThrough } from "stream"
 import streamHasher from "stream-hasher"
 import { HasherOptions } from "stream-hasher"
 import streamReplacer from "stream-replacer"
-import File = require("vinyl")
+import * as File from "vinyl"
 
 import defaultCatalogFactory from "./default-catalog"
 import { Extractor } from "./extractor"
@@ -76,6 +76,7 @@ export class Crusher {
     if (!debug) {
       debug = () => undefined
     } else if (typeof debug !== "function") {
+      // tslint:disable-next-line: no-console
       debug = console.error
     }
     this.debug = debug
@@ -171,7 +172,7 @@ export class Crusher {
 
   public pusher(options: { tagger?: any } = {}) {
     if (!this.enabled) {
-      return new stream.PassThrough({objectMode: true})
+      return new PassThrough({objectMode: true})
     }
     const { resolver, debug } = this
     const tagger = this.getTagger(options.tagger)
@@ -187,7 +188,7 @@ export class Crusher {
 
   public puller(options = {}) {
     if (!this.enabled) {
-      return new stream.PassThrough({objectMode: true})
+      return new PassThrough({objectMode: true})
     }
     return streamReplacer({
       tagger: this.getTagger(),
@@ -215,7 +216,7 @@ export class Crusher {
           rest = rest.slice(match.index + matchLength)
         }
         if (matches.length >  0) {
-          const promises: Array<Promise<any>> = []
+          const promises: Promise<any>[] = []
           for (const match of matches) {
             promises.push(new Promise((resolve, reject) => {
               options.substitute(match, tag, (err: any, replacement: any) => {

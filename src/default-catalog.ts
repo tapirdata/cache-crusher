@@ -1,7 +1,7 @@
-import fs = require("fs")
-import _ = require("lodash")
-import path = require("path")
-import File = require("vinyl")
+import * as fs from "fs"
+import * as _ from "lodash"
+import * as path from "path"
+import * as File from "vinyl"
 
 import { Extractor } from "./extractor"
 import { CatalogOptions, ExtractorOptions } from "./options"

@@ -1,7 +1,7 @@
-import _ = require("lodash")
-import minimatch = require("minimatch")
-import path = require("path")
-import util = require("util")
+import * as _ from "lodash"
+import * as minimatch from "minimatch"
+import * as path from "path"
+import * as util from "util"
 
 import { EntryOptions } from "../options"
 

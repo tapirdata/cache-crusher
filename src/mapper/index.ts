@@ -1,4 +1,3 @@
-
 import { MapperOptions, ResolverOptions } from "../options"
 import { Entry } from "./entry"
 import { Hit } from "./hit"

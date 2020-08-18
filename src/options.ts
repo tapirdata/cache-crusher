@@ -1,6 +1,6 @@
 import { HasherOptions } from "stream-hasher"
 import { ReplacerOptions } from "stream-replacer"
-import File = require("vinyl")
+import * as File from "vinyl"
 
 import { Extractor } from "./extractor"
 import { Mapper } from "./mapper"
