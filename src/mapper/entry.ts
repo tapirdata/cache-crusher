@@ -1,7 +1,7 @@
-import * as _ from "lodash"
-import * as minimatch from "minimatch"
-import * as path from "path"
-import * as util from "util"
+import _ from "lodash"
+import minimatch from "minimatch"
+import path from "path"
+import util from "util"
 
 import { EntryOptions } from "../options"
 

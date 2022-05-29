@@ -1,10 +1,10 @@
-import * as _ from "lodash"
-import * as path from "path"
+import _ from "lodash"
+import path from "path"
 import { PassThrough } from "stream"
 import streamHasher from "stream-hasher"
 import { HasherOptions } from "stream-hasher"
 import streamReplacer from "stream-replacer"
-import * as File from "vinyl"
+import File from "vinyl"
 
 import defaultCatalogFactory from "./default-catalog"
 import { Extractor } from "./extractor"

@@ -1,7 +1,7 @@
-import * as fs from "fs"
-import * as _ from "lodash"
-import * as path from "path"
-import * as File from "vinyl"
+import fs from "fs"
+import _ from "lodash"
+import path from "path"
+import File from "vinyl"
 
 import { Extractor } from "./extractor"
 import { CatalogOptions, ExtractorOptions } from "./options"

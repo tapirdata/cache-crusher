@@ -1,6 +1,6 @@
 import { HasherOptions } from "stream-hasher"
 import { ReplacerOptions } from "stream-replacer"
-import * as File from "vinyl"
+import File from "vinyl"
 
 import { Extractor } from "./extractor"
 import { Mapper } from "./mapper"
