@@ -1,6 +1,6 @@
 import { assert, expect } from "chai"
 import fs from "fs"
-import glob from "glob"
+import { glob } from "glob"
 import _ from "lodash"
 import path from "path"
 import File from "vinyl"
@@ -16,14 +16,11 @@ interface BufferMap { [p: string]: Buffer }
 interface BufferFileMap { [p: string]: { buffer: Buffer, file: File} }
 
 function readTree(srcRoot: string, srcBase: string, done: Cb) {
-  glob(srcRoot + "/**/*", {nodir: true}, (err: any, srcPaths: string[]) => {
-    if (err) {
-      done(err)
-    } else {
+  glob(srcRoot + "/**/*", {nodir: true}).then((srcPaths: string[]) => {
       const promises: Promise<Buffer>[] = srcPaths.map((srcPath: string) => new Promise((resolve, reject) => {
         return fs.readFile(srcPath, (readErr: any, srcBuffer: Buffer) => {
           if (readErr) {
-            reject(err)
+            reject(readErr)
           } else {
             resolve(srcBuffer)
           }
@@ -37,7 +34,8 @@ function readTree(srcRoot: string, srcBase: string, done: Cb) {
           })
           done(null, results)
         })
-    }
+  }).catch((err: any) => {
+    done(err);
   })
 }
 
