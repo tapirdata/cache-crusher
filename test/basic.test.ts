@@ -203,8 +203,7 @@ function makeTests(title: string, options: any) {
         crusher = crusherFactory(crusherOptions)
 
         const runPush = () => {
-          let pushWell = vinylFs.src("**/*.*", {
-            cwd: pushSrcDir,
+          let pushWell = vinylFs.src(path.join(pushSrcDir, "**/*.*"), {
             buffer: pushOptions.useBuffer,
           })
           pushWell = pushWell.pipe(crusher.pusher())
@@ -215,8 +214,7 @@ function makeTests(title: string, options: any) {
         setTimeout(runPush, pushOptions.delay)
 
         const runPull = () => {
-          let pullWell = vinylFs.src("**/*.*", {
-            cwd: pullSrcDir,
+          let pullWell = vinylFs.src(path.join(pullSrcDir, "**/*.*"), {
             buffer: pullOptions.useBuffer,
           })
           if (pullOptions.asString) {

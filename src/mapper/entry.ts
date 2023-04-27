@@ -1,5 +1,5 @@
 import _ from "lodash"
-import minimatch from "minimatch"
+import { minimatch } from "minimatch"
 import path from "path"
 import util from "util"
 
